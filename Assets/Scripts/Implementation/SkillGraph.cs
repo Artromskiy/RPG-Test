@@ -81,6 +81,7 @@ public class SkillGraph<T> : ISerializationCallbackReceiver
             this.values = values;
         }
     }
+
     public void OnAfterDeserialize()
     {
         _root = _serializedRoot;
