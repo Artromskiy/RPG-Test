@@ -1,18 +1,26 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class PlayerScoreView : MonoBehaviour
+public class PlayerScoreView : View<IPlayerScorePresenter>, IPlayerScoreView
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField]
+    private Button _earnScoreButton;
+    [SerializeField]
+    private TextMeshProUGUI _scoreTextCounter;
+
+    public event Action OnRequestEarn;
+
+    private void Start()
     {
-        
+        Presenter.OnScoreChanged += UpdateScore;
+        UpdateScore(Presenter.Score);
+        _earnScoreButton.onClick.AddListener(OnRequestEarn.Invoke);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void UpdateScore(int score)
     {
-        
+        _scoreTextCounter.text = score.ToString();
     }
 }
