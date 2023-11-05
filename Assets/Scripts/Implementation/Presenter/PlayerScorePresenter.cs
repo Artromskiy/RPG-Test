@@ -1,5 +1,4 @@
 using Reflex.Attributes;
-using System;
 
 public class PlayerScorePresenter : Presenter<IPlayerScoreView, IPlayerScorePresenter>, IPlayerScorePresenter
 {
@@ -9,11 +8,13 @@ public class PlayerScorePresenter : Presenter<IPlayerScoreView, IPlayerScorePres
     public PlayerScorePresenter()
     {
         View.OnRequestEarn += Earn;
-        _scoreModel.OnScoreChanged += OnScoreChanged;
+        _scoreModel.OnModelChanged += OnScoreChanged;
     }
 
-    public int Score => _scoreModel.Score;
-    public event Action<int> OnScoreChanged;
+    private void OnScoreChanged(IPlayerScoreModel playerScoreModel)
+    {
+        View.Score = playerScoreModel.Score;
+    }
 
     private void Earn()
     {

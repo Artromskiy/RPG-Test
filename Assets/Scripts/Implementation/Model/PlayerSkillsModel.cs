@@ -1,18 +1,26 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
-public class PlayerSkillsModel : MonoBehaviour
+public class PlayerSkillsModel : Model<IPlayerSkillsModel>, IPlayerSkillsModel
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    protected override string ModelKey { get; } = "PlayerSkillsModel";
 
-    // Update is called once per frame
-    void Update()
+    private readonly HashSet<PlayerSkill> _playerSkills;
+    public HashSet<PlayerSkill> Skills => new(_playerSkills);
+    public bool IsObtained(PlayerSkill skil) => _playerSkills.Contains(skil);
+
+    public void Obtain(PlayerSkill skill)
     {
-        
+        _playerSkills.Add(skill);
+        InvokeModelChange();
+    }
+    public void Forget(PlayerSkill skill)
+    {
+        _playerSkills.Remove(skill);
+        InvokeModelChange();
+    }
+    public void Clear()
+    {
+        _playerSkills.Clear();
+        InvokeModelChange();
     }
 }

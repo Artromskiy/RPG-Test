@@ -3,20 +3,29 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerScoreView : View<IPlayerScorePresenter>, IPlayerScoreView
+public class PlayerScoreView : View, IPlayerScoreView
 {
     [SerializeField]
     private Button _earnScoreButton;
     [SerializeField]
     private TextMeshProUGUI _scoreTextCounter;
 
-    public event Action OnRequestEarn;
 
-    private void Start()
+    public event Action OnRequestEarn;
+    public int Score
     {
-        Presenter.OnScoreChanged += UpdateScore;
-        UpdateScore(Presenter.Score);
+        set => UpdateScore(value);
+    }
+
+
+    private void OnEnable()
+    {
         _earnScoreButton.onClick.AddListener(OnRequestEarn.Invoke);
+    }
+
+    private void OnDisable()
+    {
+        _earnScoreButton.onClick.RemoveListener(OnRequestEarn.Invoke);
     }
 
     private void UpdateScore(int score)

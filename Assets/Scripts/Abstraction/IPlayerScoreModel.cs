@@ -1,7 +1,6 @@
 using System;
 
-public interface IPlayerScoreModel : IModel
+public interface IPlayerScoreModel : IModel<IPlayerScoreModel>
 {
-    public event Action<int> OnScoreChanged;
     public int Score { get; set; }
 }

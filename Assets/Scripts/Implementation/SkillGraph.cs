@@ -17,6 +17,12 @@ public class SkillGraph<T> : ISerializationCallbackReceiver
     private T _serializedRoot;
     private readonly List<KeydList> _serializedData;
 
+    private static readonly Predicate<T> _defaultSkipDelegate;
+    static SkillGraph()
+    {
+        _defaultSkipDelegate = (_) => false;
+    }
+
     /// <summary>
     /// Checks if element is still reachable from root
     /// even if some vertices will be skipped during search
@@ -24,8 +30,10 @@ public class SkillGraph<T> : ISerializationCallbackReceiver
     /// <param name="search"></param>
     /// <param name="skip"></param>
     /// <returns></returns>
-    public bool IsReachable(T search, Predicate<T> skip)
+    public bool IsReachable(T search, Predicate<T> skip = null)
     {
+        skip ??= _defaultSkipDelegate;
+
         if (skip(search))
             return false;
 
@@ -61,6 +69,65 @@ public class SkillGraph<T> : ISerializationCallbackReceiver
             }
         }
         return false;
+    }
+    public bool IsReachable(T search, T skip)
+    {
+        if (skip.Equals(search))
+            return false;
+
+        if (!_data.ContainsKey(search))
+            return false;
+
+        if (search.Equals(_root))
+            return true;
+
+        Queue<T> searchQueue = new();
+        HashSet<T> checkedVertices = new();
+
+        searchQueue.Enqueue(_root);
+        checkedVertices.Add(_root);
+
+        checkedVertices.Add(skip);
+
+        while (searchQueue.Count != 0)
+        {
+            var current = searchQueue.Dequeue();
+            foreach (var item in _data[current])
+            {
+                if (!checkedVertices.Contains(item))
+                {
+                    if (item.Equals(search))
+                        return true;
+
+                    searchQueue.Enqueue(item);
+                    checkedVertices.Add(item);
+                }
+            }
+        }
+        return false;
+    }
+
+    public bool IsAllReachable(HashSet<T> search, Predicate<T> skip)
+    {
+        foreach (var element in search)
+            if (!IsReachable(element, skip))
+                return false;
+        return true;
+    }
+
+    public bool IsAllReachable(HashSet<T> search, T skip)
+    {
+        foreach (var element in search)
+            if (!IsReachable(element, skip))
+                return false;
+        return true;
+    }
+
+    public HashSet<T>? GetNear(T search)
+    {
+        if (_data.TryGetValue(search, out var result))
+            return result;
+        return null;
     }
 
     /// <summary>

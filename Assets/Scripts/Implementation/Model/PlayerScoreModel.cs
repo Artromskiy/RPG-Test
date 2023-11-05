@@ -1,18 +1,18 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class PlayerScoreModel : MonoBehaviour
+public class PlayerScoreModel : Model<IPlayerScoreModel>, IPlayerScoreModel
 {
-    // Start is called before the first frame update
-    void Start()
+    private int _score;
+
+    protected override string ModelKey { get; } = "PlayerScoreModel";
+
+    public int Score
     {
-        
+        get => _score;
+        set => SetScore(value);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void SetScore(int score)
     {
-        
+        _score = score;
+        InvokeModelChange();
     }
 }

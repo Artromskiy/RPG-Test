@@ -1,5 +1,7 @@
-public interface IPresenter<TView, TPresenter>
-    where TView: IView<TPresenter>
+using System;
+
+public interface IPresenter<TView, TPresenter>: IDisposable
+    where TView: IView
     where TPresenter : IPresenter<TView, TPresenter>
     
 {

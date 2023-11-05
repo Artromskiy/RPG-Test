@@ -1,4 +1,2 @@
-public interface IView<TPresenter>
-{
-    TPresenter Presenter { get; set; }
-}
+using System;
+public interface IView : IDisposable { }
