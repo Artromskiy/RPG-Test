@@ -12,10 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbbd1405b1ca2db4ba8b5aa272ef8d0a, type: 3}
   m_Name: PlayerSkillGraph
   m_EditorClassIdentifier: 
-  Key: PlayerSkillsConfig
-  _root:
-    _id: 0
-    _price: 0
+  Key: SkillGraphConfig
   skillPrices: 000000000100000003000000030000000400000002000000030000000400000006000000020000000b000000
   _connections:
   - from: 0

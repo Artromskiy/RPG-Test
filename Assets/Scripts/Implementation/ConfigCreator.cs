@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 using System.IO;
 using UnityEngine;
 
-public static class ConfigCreator<T> where T : class, IConfig, new()
+public static class ConfigCreator<T> where T : class, IConfig
 {
     public static T Create(string key)
     {

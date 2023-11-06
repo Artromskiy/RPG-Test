@@ -13,8 +13,8 @@ public class PlayerSkillsView : View, IPlayerSkillsView
     private Button _forgetAllButton;
 
     [SerializeField]
-    private List<SkillViewPair> _playerSkillViews;                                      // SkillViewPair created to avoid mixing of data and view
-    private readonly Dictionary<int, PlayerSkillView> _skillToView = new();     // The best way is to use Odin serializer/editor instead of such workarounds or sorted collection but it's slover
+    private List<SkillViewPair> _playerSkillViews;                              // SkillViewPair created to avoid mixing of data and view
+    private readonly Dictionary<int, PlayerSkillView> _skillToView = new();     // The best way is to use Odin serializer/editor instead of such workarounds
 
     public bool CanObtainSelected { get; set; }
     public bool CanForgetSelected { get; set; }
