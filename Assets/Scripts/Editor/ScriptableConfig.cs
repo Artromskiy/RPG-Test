@@ -43,7 +43,7 @@ public class ScriptableConfig : ScriptableObject
             skills[from].Add(to);
             skills[to].Add(from);
         }
-        Graph<int, PlayerSkill> playerSkills = new(_root, skills);
+        Graph<int, PlayerSkill> playerSkills = new(0, skills);
         var serializedData = JsonConvert.SerializeObject(playerSkills);
         File.WriteAllText($"{Application.dataPath}/Resources/{Key}.json", serializedData, Encoding.UTF8);
     }

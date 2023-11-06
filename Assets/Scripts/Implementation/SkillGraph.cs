@@ -40,9 +40,9 @@ public class Graph<TKey, TValue> : IEnumerable<Graph<TKey, TValue>.Connection> w
         _defaultSkipDelegate = (_) => false;
     }
 
-    public Graph(TValue root, Dictionary<TValue, HashSet<TValue>> data)
+    public Graph(TKey root, Dictionary<TValue, HashSet<TValue>> data)
     {
-        _root = root.Key;
+        _root = root;
         _data = new();
         foreach (var item in data)
         {
