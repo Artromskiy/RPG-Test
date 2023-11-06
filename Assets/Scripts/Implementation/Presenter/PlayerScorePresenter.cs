@@ -1,14 +1,24 @@
-using Reflex.Attributes;
-
-public class PlayerScorePresenter : Presenter<IPlayerScoreView, IPlayerScorePresenter>, IPlayerScorePresenter
+public class PlayerScorePresenter : Presenter<IPlayerScoreView>, IPlayerScorePresenter
 {
-    [Inject]
     private readonly IPlayerScoreModel _scoreModel;
 
-    public PlayerScorePresenter()
+    public PlayerScorePresenter(IPlayerScoreModel scoreModel) :base()
     {
-        View.OnRequestEarn += Earn;
+        _scoreModel = scoreModel;
+
+        View.OnRequestEarn.Event += Earn;
         _scoreModel.OnModelChanged += OnScoreChanged;
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (_scoreModel != null)
+            _scoreModel.OnModelChanged -= OnScoreChanged;
+
+        if(View != null)
+            View.OnRequestEarn.Event += Earn;
+
+        base.Dispose(disposing);
     }
 
     private void OnScoreChanged(IPlayerScoreModel playerScoreModel)

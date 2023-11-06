@@ -1,4 +1,4 @@
-public interface IPlayerSkillsPresenter : IPresenter<IPlayerSkillsView, IPlayerSkillsPresenter>
+public interface IPlayerSkillsPresenter : IPresenter<IPlayerSkillsView>
 {
 
 }

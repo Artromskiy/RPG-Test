@@ -1,26 +1,25 @@
-using Reflex.Attributes;
-using System;
 using System.Diagnostics;
 
-public class PlayerSkillsPresenter : Presenter<IPlayerSkillsView, IPlayerSkillsPresenter>, IPlayerSkillsPresenter, IDisposable
+public class PlayerSkillsPresenter : Presenter<IPlayerSkillsView>, IPlayerSkillsPresenter
 {
-    [Inject]
     private readonly IPlayerSkillsModel _playerSkills;
-    [Inject]
     private readonly IPlayerScoreModel _playerScore;
     public SkillGraph<PlayerSkill> SkillGraph { get; }
 
     private PlayerSkill? _selectedSkill;
 
-    public PlayerSkillsPresenter()
+    public PlayerSkillsPresenter(IPlayerSkillsModel playerSkills, IPlayerScoreModel playerScore)
     {
+        _playerSkills = playerSkills;
+        _playerScore = playerScore;
+
         _playerSkills.OnModelChanged += OnSkillsChanged;
         _playerScore.OnModelChanged += OnScoreChanged;
 
-        View.OnForgetAllClicked += ForgetAll;
-        View.OnForgetClicked += Forget;
-        View.OnObtainClicked += Obtain;
-        View.OnSkillClicked += Select;
+        View.OnForgetAllClicked.Event += ForgetAll;
+        View.OnForgetClicked.Event += Forget;
+        View.OnObtainClicked.Event += Obtain;
+        View.OnSkillClicked.Event += Select;
     }
 
     protected override void Dispose(bool disposing)
@@ -28,12 +27,12 @@ public class PlayerSkillsPresenter : Presenter<IPlayerSkillsView, IPlayerSkillsP
         _playerSkills.OnModelChanged -= OnSkillsChanged;
         _playerScore.OnModelChanged -= OnScoreChanged;
 
-        View.OnForgetAllClicked -= ForgetAll;
-        View.OnForgetClicked -= Forget;
-        View.OnObtainClicked -= Obtain;
-        View.OnSkillClicked -= Select;
+        View.OnForgetAllClicked.Event -= ForgetAll;
+        View.OnForgetClicked.Event -= Forget;
+        View.OnObtainClicked.Event -= Obtain;
+        View.OnSkillClicked.Event -= Select;
 
-        base.Dispose();
+        base.Dispose(disposing);
     }
 
     private void ForgetAll()

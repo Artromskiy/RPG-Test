@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
-using UnityEngine;
 
 /// <summary>
 /// Immutable collection that stores objects and
@@ -9,13 +7,10 @@ using UnityEngine;
 /// between objects
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public class SkillGraph<T> : ISerializationCallbackReceiver
+public class SkillGraph<T>
 {
-    private T _root;
-    private Dictionary<T, HashSet<T>> _data;
-
-    private T _serializedRoot;
-    private readonly List<KeydList> _serializedData;
+    private readonly T _root;
+    private readonly Dictionary<T, HashSet<T>> _data;
 
     private static readonly Predicate<T> _defaultSkipDelegate;
     static SkillGraph()
@@ -129,46 +124,6 @@ public class SkillGraph<T> : ISerializationCallbackReceiver
             return result;
         return null;
     }
-
-    /// <summary>
-    /// Used for serialization of _data
-    /// and deserialization from _serializedData.
-    /// This is draft solution,
-    /// in real app serialization library should be used
-    /// </summary>
-    [Serializable]
-    private struct KeydList
-    {
-        public T key;
-        public List<T> values;
-
-        public KeydList(T key, List<T> values)
-        {
-            this.key = key;
-            this.values = values;
-        }
-    }
-
-    public void OnAfterDeserialize()
-    {
-        _root = _serializedRoot;
-        _data = new();
-        foreach (var item in _serializedData)
-            _data.Add(item.key, new(item.values));
-        if (!IsValid(out var message))
-            throw new SerializationException(message);
-    }
-
-    public void OnBeforeSerialize()
-    {
-        _serializedRoot = _root;
-        _serializedData.Clear();
-        foreach (var item in _data)
-            _serializedData.Add(new(item.Key, new(item.Value)));
-        if (!IsValid(out var message))
-            throw new SerializationException(message);
-    }
-
 
     /// <summary>
     /// Checks the correctness of the graph.

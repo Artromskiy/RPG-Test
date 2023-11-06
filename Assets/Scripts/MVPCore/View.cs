@@ -1,6 +1,10 @@
 using UnityEngine;
+using System;
 
-public class View : MonoBehaviour, IView
+/// <summary>
+/// Base View class providing dispose callbacks
+/// </summary>
+public abstract class View : MonoBehaviour, IView
 {
     private bool _disposed;
     ~View()
@@ -8,13 +12,24 @@ public class View : MonoBehaviour, IView
         if (!_disposed)
             Dispose(false);
     }
+    /// <summary>
+    /// Protected used to force using of Dispose pattern
+    /// </summary>
+    protected void OnDestroy()
+    {
+        if (!_disposed)
+            Dispose(false);
+    }
 
-    public void Dispose()
+    /// <summary>
+    /// Provides clearing functionality for resources
+    /// Note that it created explicitly,
+    /// this is done to remove accidential call from inheritors
+    void IDisposable.Dispose()
     {
         if (!_disposed)
             Dispose(true);
     }
-
 
     /// <summary>
     /// Dispose method for inheritors
@@ -22,12 +37,12 @@ public class View : MonoBehaviour, IView
     /// implementors to call base dispose at the end
     /// This should reduce potential errors
     /// </summary>
-    /// <param name="disposing">True when called from user code, False when called from destructor</param>
+    /// <param name="disposing">True when called from user code, False when called from destructor or OnDestroy</param>
     protected virtual void Dispose(bool disposing)
     {
         // As unity manages objects in it's own manner we will call Destroy only on user code
         // If we will call it from destructor - gameObject sended to Destroy will be null and Unity will throw exception
-        if(disposing)
+        if (disposing)
             Destroy(gameObject);
         _disposed = true;
     }

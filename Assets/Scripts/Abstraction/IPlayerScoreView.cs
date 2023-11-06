@@ -1,6 +1,6 @@
 using System;
 public interface IPlayerScoreView : IView
 {
-    public event Action OnRequestEarn;
+    public IGameEvent OnRequestEarn { get; }
     public int Score { set; }
 }

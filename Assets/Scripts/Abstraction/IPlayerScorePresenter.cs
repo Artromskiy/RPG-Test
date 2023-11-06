@@ -1,6 +1,1 @@
-using System;
-
-public interface IPlayerScorePresenter : IPresenter<IPlayerScoreView, IPlayerScorePresenter>
-{
-
-}
+public interface IPlayerScorePresenter : IPresenter<IPlayerScoreView> { }

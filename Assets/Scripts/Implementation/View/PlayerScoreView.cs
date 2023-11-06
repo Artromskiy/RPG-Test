@@ -1,4 +1,3 @@
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,13 +9,13 @@ public class PlayerScoreView : View, IPlayerScoreView
     [SerializeField]
     private TextMeshProUGUI _scoreTextCounter;
 
+    public GameEvent OnRequestEarn = new();
+    IGameEvent IPlayerScoreView.OnRequestEarn => OnRequestEarn;
 
-    public event Action OnRequestEarn;
     public int Score
     {
         set => UpdateScore(value);
     }
-
 
     private void OnEnable()
     {

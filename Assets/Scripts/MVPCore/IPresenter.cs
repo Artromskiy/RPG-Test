@@ -1,9 +1,7 @@
 using System;
 
-public interface IPresenter<TView, TPresenter>: IDisposable
-    where TView: IView
-    where TPresenter : IPresenter<TView, TPresenter>
-    
+public interface IPresenter<TView> : IDisposable
+    where TView : class, IView
 {
-    TView View { get; set; }
+    TView View { get; }
 }
