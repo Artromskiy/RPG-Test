@@ -13,6 +13,10 @@ public class SkillGraph<T>
     private readonly Dictionary<T, HashSet<T>> _data;
 
     private static readonly Predicate<T> _defaultSkipDelegate;
+
+    private static readonly HashSet<T> _searchedVertices = new();
+    private static readonly Queue<T> _searchQueue = new();
+
     static SkillGraph()
     {
         _defaultSkipDelegate = (_) => false;
@@ -20,12 +24,12 @@ public class SkillGraph<T>
 
     /// <summary>
     /// Checks if element is still reachable from root
-    /// even if some vertices will be skipped during search
+    /// even if some vertices will be skipped during from
     /// </summary>
     /// <param name="search"></param>
     /// <param name="skip"></param>
     /// <returns></returns>
-    public bool IsReachable(T search, Predicate<T> skip = null)
+    public bool IsReachableFromRoot(T search, Predicate<T> skip = null)
     {
         skip ??= _defaultSkipDelegate;
 
@@ -38,34 +42,121 @@ public class SkillGraph<T>
         if (search.Equals(_root))
             return true;
 
-        Queue<T> searchQueue = new();
-        HashSet<T> checkedVertices = new();
+        _searchQueue.Clear();
+        _searchedVertices.Clear();
 
-        searchQueue.Enqueue(_root);
-        checkedVertices.Add(_root);
+        _searchQueue.Enqueue(_root);
+        _searchedVertices.Add(_root);
 
         foreach (var vertex in _data)
             if (skip(vertex.Key))
-                checkedVertices.Add(vertex.Key);
+                _searchedVertices.Add(vertex.Key);
 
-        while (searchQueue.Count != 0)
+        while (_searchQueue.Count != 0)
         {
-            var current = searchQueue.Dequeue();
+            var current = _searchQueue.Dequeue();
             foreach (var item in _data[current])
             {
-                if (!checkedVertices.Contains(item))
+                if (!_searchedVertices.Contains(item))
                 {
                     if (item.Equals(search))
                         return true;
 
-                    searchQueue.Enqueue(item);
-                    checkedVertices.Add(item);
+                    _searchQueue.Enqueue(item);
+                    _searchedVertices.Add(item);
                 }
             }
         }
         return false;
     }
-    public bool IsReachable(T search, T skip)
+
+    /// <summary>
+    /// Checks if element is still reachable from root
+    /// even if some vertices will be skipped during from
+    /// </summary>
+    /// <param name="from"></param>
+    /// <param name="skip"></param>
+    /// <returns></returns>
+    public bool IsRootReachable(T from, Predicate<T> skip = null)
+    {
+        skip ??= _defaultSkipDelegate;
+
+        if (skip(from))
+            return false;
+
+        if (!_data.ContainsKey(from))
+            return false;
+
+        if (from.Equals(_root))
+            return true;
+
+        _searchQueue.Clear();
+        _searchedVertices.Clear();
+
+        _searchQueue.Enqueue(from);
+        _searchedVertices.Add(from);
+
+        foreach (var vertex in _data)
+            if (skip(vertex.Key))
+                _searchedVertices.Add(vertex.Key);
+
+        while (_searchQueue.Count != 0)
+        {
+            var current = _searchQueue.Dequeue();
+            foreach (var item in _data[current])
+            {
+                if (!_searchedVertices.Contains(item))
+                {
+                    if (item.Equals(_root))
+                        return true;
+
+                    _searchQueue.Enqueue(item);
+                    _searchedVertices.Add(item);
+                }
+            }
+        }
+        return false;
+    }
+
+
+    public bool IsRootReachable(T from, T skip)
+    {
+        if (skip.Equals(from))
+            return false;
+
+        if (!_data.ContainsKey(from))
+            return false;
+
+        if (from.Equals(_root))
+            return true;
+
+        _searchQueue.Clear();
+        _searchedVertices.Clear();
+
+        _searchQueue.Enqueue(from);
+        _searchedVertices.Add(from);
+        _searchedVertices.Add(skip);
+
+        while (_searchQueue.Count != 0)
+        {
+            var current = _searchQueue.Dequeue();
+            foreach (var item in _data[current])
+            {
+                if (!_searchedVertices.Contains(item))
+                {
+                    if (item.Equals(_root))
+                        return true;
+
+                    _searchQueue.Enqueue(item);
+                    _searchedVertices.Add(item);
+                }
+            }
+        }
+        return false;
+    }
+
+
+    public bool IsReachableFromRoot(T search, T skip)
     {
         if (skip.Equals(search))
             return false;
@@ -76,26 +167,26 @@ public class SkillGraph<T>
         if (search.Equals(_root))
             return true;
 
-        Queue<T> searchQueue = new();
-        HashSet<T> checkedVertices = new();
+        _searchQueue.Clear();
+        _searchedVertices.Clear();
 
-        searchQueue.Enqueue(_root);
-        checkedVertices.Add(_root);
+        _searchQueue.Enqueue(_root);
+        _searchedVertices.Add(_root);
 
-        checkedVertices.Add(skip);
+        _searchedVertices.Add(skip);
 
-        while (searchQueue.Count != 0)
+        while (_searchQueue.Count != 0)
         {
-            var current = searchQueue.Dequeue();
+            var current = _searchQueue.Dequeue();
             foreach (var item in _data[current])
             {
-                if (!checkedVertices.Contains(item))
+                if (!_searchedVertices.Contains(item))
                 {
                     if (item.Equals(search))
                         return true;
 
-                    searchQueue.Enqueue(item);
-                    checkedVertices.Add(item);
+                    _searchQueue.Enqueue(item);
+                    _searchedVertices.Add(item);
                 }
             }
         }
@@ -105,7 +196,7 @@ public class SkillGraph<T>
     public bool IsAllReachable(HashSet<T> search, Predicate<T> skip)
     {
         foreach (var element in search)
-            if (!IsReachable(element, skip))
+            if (!IsReachableFromRoot(element, skip))
                 return false;
         return true;
     }
@@ -113,7 +204,7 @@ public class SkillGraph<T>
     public bool IsAllReachable(HashSet<T> search, T skip)
     {
         foreach (var element in search)
-            if (!IsReachable(element, skip))
+            if (!IsReachableFromRoot(element, skip))
                 return false;
         return true;
     }
