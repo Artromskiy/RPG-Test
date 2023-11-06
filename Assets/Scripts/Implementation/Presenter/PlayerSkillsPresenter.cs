@@ -4,11 +4,11 @@ public class PlayerSkillsPresenter : Presenter<IPlayerSkillsView>, IPlayerSkills
 {
     private readonly IPlayerSkillsModel _playerSkills;
     private readonly IPlayerScoreModel _playerScore;
-    public SkillGraph<PlayerSkill> SkillGraph => View.SkillGraphConfig.PlayerSkillGraph;
+    public Graph<int, PlayerSkill> Graph => View.SkillGraphConfig.PlayerSkillGraph;
 
     private PlayerSkill _selectedSkill;
 
-    public PlayerSkillsPresenter(IPlayerSkillsModel playerSkills, IPlayerScoreModel playerScore, IPlayerSkillsView view):base(view)
+    public PlayerSkillsPresenter(IPlayerSkillsModel playerSkills, IPlayerScoreModel playerScore, IPlayerSkillsView view) : base(view)
     {
         _playerSkills = playerSkills;
         _playerScore = playerScore;
@@ -50,7 +50,7 @@ public class PlayerSkillsPresenter : Presenter<IPlayerSkillsView>, IPlayerSkills
     {
         Debug.Assert(CanForget());
 
-        _playerScore.Score += _selectedSkill.Price;
+        _playerScore.Score += _selectedSkill.price;
         _playerSkills.Forget(_selectedSkill);
     }
 
@@ -58,7 +58,7 @@ public class PlayerSkillsPresenter : Presenter<IPlayerSkillsView>, IPlayerSkills
     {
         Debug.Assert(CanObtain());
 
-        _playerScore.Score -= _selectedSkill.Price;
+        _playerScore.Score -= _selectedSkill.price;
         _playerSkills.Obtain(_selectedSkill);
     }
 
@@ -83,32 +83,37 @@ public class PlayerSkillsPresenter : Presenter<IPlayerSkillsView>, IPlayerSkills
         PlayerSkill selectedSkill = _selectedSkill;
         if (_playerSkills.IsObtained(selectedSkill))
         {
-            var obtainedSkillsNearSelected = _playerSkills.Skills;
-            obtainedSkillsNearSelected.IntersectWith(SkillGraph.GetConnections(_selectedSkill));
+            bool canForget = true;
+            foreach (var item in Graph.GetConnections(_selectedSkill))
+                if (_playerSkills.IsObtained(Graph[item].value) && !Graph.IsRootReachable(item, selectedSkill))
+                    canForget = false;
 
-            View.CanForgetSelected = SkillGraph.IsAllReachable(obtainedSkillsNearSelected, selectedSkill);
+            View.CanForgetSelected = canForget;
             View.CanObtainSelected = false;
         }
         else
         {
-            View.CanObtainSelected = _playerScore.Score >= selectedSkill.Price && SkillGraph.IsReachableFromRoot(selectedSkill, _playerSkills.IsObtained);
+            View.CanObtainSelected = _playerScore.Score >= selectedSkill.price && Graph.IsReachableFromRoot(selectedSkill, _playerSkills.IsObtained);
             View.CanForgetSelected = false;
         }
     }
 
     private bool CanObtain()
     {
-        return _selectedSkill != null && !_playerSkills.IsObtained(_selectedSkill) && SkillGraph.IsReachableFromRoot(_selectedSkill, _playerSkills.IsObtained);
+        return _selectedSkill != null && !_playerSkills.IsObtained(_selectedSkill) && Graph.IsReachableFromRoot(_selectedSkill, _playerSkills.IsObtained);
     }
 
     private bool CanForget()
     {
         if (_selectedSkill != null)
             return false;
+        if (_playerSkills.IsObtained(_selectedSkill))
+            return false;
 
-        var obtainedSkillsNearSelected = _playerSkills.Skills;
-        obtainedSkillsNearSelected.IntersectWith(SkillGraph.GetConnections(_selectedSkill));
+        foreach (var item in Graph.GetConnections(_selectedSkill))
+            if (_playerSkills.IsObtained(Graph[item].value) && !Graph.IsRootReachable(item, _selectedSkill))
+                return false;
 
-        return _selectedSkill != null && _playerSkills.IsObtained(_selectedSkill) && SkillGraph.IsAllReachable(obtainedSkillsNearSelected, _selectedSkill);
+        return true;
     }
 }

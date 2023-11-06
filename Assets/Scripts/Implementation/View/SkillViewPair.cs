@@ -1,11 +1,14 @@
+using System;
 using UnityEngine;
+
+[Serializable]
 public struct SkillViewPair
 {
     [SerializeField]
-    private PlayerSkill _skill;
+    private int id;
     [SerializeField]
     private PlayerSkillView _skillView;
 
-    public readonly PlayerSkill Skill => _skill;
+    public readonly int Id => id;
     public readonly PlayerSkillView View => _skillView;
 }

@@ -23,7 +23,7 @@ public static class ConfigCreator<T> where T : class, IConfig, new()
             }
         }
         if (serializationError)
-            throw new JsonSerializationException($"Config with key {key} not loaded");
+            throw new JsonSerializationException($"Config with value {key} not loaded");
         if (!created)
             throw new FileNotFoundException("Config not found", key);
         return config;

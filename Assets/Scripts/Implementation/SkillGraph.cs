@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,30 +9,63 @@ using System.Diagnostics;
 /// infromation about existence of relationships
 /// between objects
 /// </summary>
-/// <typeparam name="T"></typeparam>
-public class SkillGraph<T> : IEnumerable<T>
+/// <typeparam name="TValue"></typeparam>
+[JsonObject(MemberSerialization.OptIn)] // This attribute forces user to specify serialized data with JsonProprtyAttribute
+public class Graph<TKey, TValue> : IEnumerable<Graph<TKey, TValue>.Connection> where TValue : IKeyd<TKey> where TKey : IEquatable<TKey>
 {
-    private readonly T _root;
-    private readonly Dictionary<T, HashSet<T>> _data;
+    [JsonProperty]
+    private readonly TKey _root;
+    [JsonProperty]
+    private readonly Dictionary<TKey, Connection> _data;
 
-    private static readonly Predicate<T> _defaultSkipDelegate;
+    /// <summary>
+    /// cached empty delegate
+    /// </summary>
+    private static readonly Predicate<TKey> _defaultSkipDelegate;
 
-    private static readonly HashSet<T> _searchedVertices = new();
-    private static readonly Queue<T> _searchQueue = new();
+    /// <summary>
+    /// Used for caching
+    /// </summary>
+    private static readonly HashSet<TKey> _searchedVertices = new();
+    /// <summary>
+    /// Used for caching
+    /// </summary>
+    private static readonly Queue<TKey> _searchQueue = new();
 
-    static SkillGraph()
+    public Connection this[TKey key] => _data[key];
+
+
+    static Graph()
     {
         _defaultSkipDelegate = (_) => false;
     }
 
+    public Graph(TValue root, Dictionary<TValue, HashSet<TValue>> data)
+    {
+        _root = root.Key;
+        _data = new();
+        foreach (var item in data)
+        {
+            HashSet<TKey> connectionKeys = new();
+            foreach (var connected in item.Value)
+                connectionKeys.Add(connected.Key);
+            _data.Add(item.Key.Key, new Connection(item.Key, connectionKeys));
+        }
+        if (!IsValid(out string message))
+            throw new ArgumentException(message);
+    }
+
+    public bool IsReachableFromRoot(TValue search, Predicate<TValue> skip = null) => IsReachableFromRoot(search.Key, x => skip(this[x].value));
+    public bool IsReachableFromRoot(TValue search, Predicate<TKey> skip = null) => IsReachableFromRoot(search.Key, skip);
+    public bool IsReachableFromRoot(TKey search, Predicate<TValue> skip = null) => IsReachableFromRoot(search, x => skip(this[x].value));
     /// <summary>
-    /// Checks if element is still reachable from root
-    /// even if some vertices will be skipped during from
+    /// Checks if element with specified value is still reachable from root
+    /// even if some vertices will be skipped during value
     /// </summary>
     /// <param name="search"></param>
     /// <param name="skip"></param>
     /// <returns></returns>
-    public bool IsReachableFromRoot(T search, Predicate<T> skip = null)
+    public bool IsReachableFromRoot(TKey search, Predicate<TKey> skip = null)
     {
         skip ??= _defaultSkipDelegate;
 
@@ -72,6 +106,9 @@ public class SkillGraph<T> : IEnumerable<T>
         return false;
     }
 
+    public bool IsRootReachable(TValue search, Predicate<TValue> skip = null) => IsRootReachable(search.Key, x => skip(this[x].value));
+    public bool IsRootReachable(TValue from, Predicate<TKey> skip = null) => IsReachableFromRoot(from.Key, skip);
+    public bool IsRootReachable(TKey from, Predicate<TValue> skip = null) => IsReachableFromRoot(from, x => skip(this[x].value));
     /// <summary>
     /// Checks if element is still reachable from root
     /// even if some vertices will be skipped during from
@@ -79,7 +116,7 @@ public class SkillGraph<T> : IEnumerable<T>
     /// <param name="from"></param>
     /// <param name="skip"></param>
     /// <returns></returns>
-    public bool IsRootReachable(T from, Predicate<T> skip = null)
+    public bool IsRootReachable(TKey from, Predicate<TKey> skip = null)
     {
         skip ??= _defaultSkipDelegate;
 
@@ -121,7 +158,10 @@ public class SkillGraph<T> : IEnumerable<T>
     }
 
 
-    public bool IsRootReachable(T from, T skip)
+    public bool IsRootReachable(TValue search, TValue skip) => IsRootReachable(search.Key, skip.Key);
+    public bool IsRootReachable(TValue from, TKey skip) => IsRootReachable(from.Key, skip);
+    public bool IsRootReachable(TKey from, TValue skip) => IsRootReachable(from, skip.Key);
+    public bool IsRootReachable(TKey from, TKey skip)
     {
         if (skip.Equals(from))
             return false;
@@ -158,7 +198,10 @@ public class SkillGraph<T> : IEnumerable<T>
     }
 
 
-    public bool IsReachableFromRoot(T search, T skip)
+    public bool IsReachableFromRoot(TValue search, TValue skip) => IsReachableFromRoot(search.Key, skip.Key);
+    public bool IsReachableFromRoot(TValue search, TKey skip) => IsReachableFromRoot(search.Key, skip);
+    public bool IsReachableFromRoot(TKey search, TValue skip) => IsReachableFromRoot(search, skip);
+    public bool IsReachableFromRoot(TKey search, TKey skip)
     {
         if (skip.Equals(search))
             return false;
@@ -195,27 +238,12 @@ public class SkillGraph<T> : IEnumerable<T>
         return false;
     }
 
-    public bool IsAllReachable(HashSet<T> search, Predicate<T> skip)
+    public Connection GetConnections(TValue search) => GetConnections(search.Key);
+    public Connection GetConnections(TKey key)
     {
-        foreach (var element in search)
-            if (!IsReachableFromRoot(element, skip))
-                return false;
-        return true;
-    }
-
-    public bool IsAllReachable(HashSet<T> search, T skip)
-    {
-        foreach (var element in search)
-            if (!IsReachableFromRoot(element, skip))
-                return false;
-        return true;
-    }
-
-    public HashSet<T> GetConnections(T search)
-    {
-        if (_data.TryGetValue(search, out var result))
+        if (_data.TryGetValue(key, out var result))
             return result;
-        return null;
+        throw new ArgumentException();
     }
 
     /// <summary>
@@ -229,7 +257,7 @@ public class SkillGraph<T> : IEnumerable<T>
     private bool IsValid(out string message)
     {
         message = string.Empty;
-        if (!_data.ContainsKey(_root))
+        if (_root == null || !_data.ContainsKey(_root))
         {
             message = "Graph does not contain root";
             return false;
@@ -238,23 +266,23 @@ public class SkillGraph<T> : IEnumerable<T>
         {
             if (relations.Value.Contains(relations.Key))
             {
-                message = "Vertex can not be self referenced";
+                message = $"Vertex can not be self referenced. Vertex: {relations.Key}";
                 return false;
             }
             foreach (var vertex in relations.Value)
             {
-                if (!_data.TryGetValue(vertex, out var inverseRelation) || !inverseRelation.Contains(vertex))
+                if (!_data.TryGetValue(vertex, out var inverseRelation) || !inverseRelation.Contains(relations.Key))
                 {
-                    message = "Directed vertices found in graph";
+                    message = $"Directed vertices found in graph. Vertex: {vertex}";
                     return false;
                 }
             }
         }
-        HashSet<T> notCheckedVertices = new();
+        HashSet<TKey> notCheckedVertices = new();
         foreach (var relations in _data)
             notCheckedVertices.UnionWith(relations.Value);
         notCheckedVertices.Remove(_root);
-        Queue<T> searchQueue = new();
+        Queue<TKey> searchQueue = new();
         searchQueue.Enqueue(_root);
         while (searchQueue.Count != 0)
         {
@@ -276,27 +304,29 @@ public class SkillGraph<T> : IEnumerable<T>
         return true;
     }
 
-    public readonly struct ConnectionEnumerator : IEnumerable<T>
+    /// <summary>
+    /// Connection class that stores connection to specified value
+    /// </summary>
+    [JsonObject(MemberSerialization.OptIn)]
+    public readonly struct Connection : IEnumerable<TKey>
     {
-        private readonly HashSet<T> _enumerator;
-        public IEnumerator<T> GetEnumerator() => _enumerator.GetEnumerator();
+        [JsonProperty]
+        public readonly TValue value;
+        [JsonProperty]
+        private readonly HashSet<TKey> _hashset;
+        public IEnumerator<TKey> GetEnumerator() => _hashset.GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public ConnectionEnumerator(HashSet<T> hashSet)
+        public bool Contains(TKey value) => _hashset.Contains(value);
+        public bool Contains(TValue value) => _hashset.Contains(value.Key);
+
+        public Connection(TValue value, HashSet<TKey> hashSet)
         {
             Debug.Assert(hashSet != null);
-            _enumerator = hashSet;
+            this.value = value;
+            _hashset = hashSet;
         }
     }
-
-
-    public ConnectionEnumerator EnumerateConnections(T key)
-    {
-        if (!_data.ContainsKey(key))
-            throw new ArgumentException(nameof(key));
-        return new(_data[key]);
-    }
-
-    public IEnumerator<T> GetEnumerator() => _data.Keys.GetEnumerator();
+    public IEnumerator<Connection> GetEnumerator() => _data.Values.GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

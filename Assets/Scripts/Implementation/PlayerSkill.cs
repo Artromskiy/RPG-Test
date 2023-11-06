@@ -1,29 +1,22 @@
-using System;
-using UnityEngine;
+using Newtonsoft.Json;
 
-[Serializable]
-public class PlayerSkill : IEquatable<PlayerSkill>
+public class PlayerSkill : Keyd<int>
 {
-    [SerializeField]
-    private int _id;
-    [SerializeField]
-    private int _price;
+    [JsonProperty]
+    public readonly int id;
+    [JsonProperty]
+    public readonly int price;
 
-    public int Id => _id;
-    public int Price => _price;
+    public override int Key => id;
 
-    public bool Equals(PlayerSkill other)
+
+    public PlayerSkill(int id, int price)
     {
-        return Id == other.Id;
+        this.id = id;
+        this.price = price;
     }
-
-    public override bool Equals(object obj)
+    public override string ToString()
     {
-        return obj is PlayerSkill skill && skill.Equals(this);
-    }
-
-    public override int GetHashCode()
-    {
-        return Id.GetHashCode();
+        return $"id: {id}, price: {price}";
     }
 }
