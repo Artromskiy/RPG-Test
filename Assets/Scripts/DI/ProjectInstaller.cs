@@ -5,13 +5,10 @@ public class ProjectInstaller : MonoBehaviour, IInstaller
 {
     public void InstallBindings(ContainerDescriptor descriptor)
     {
-        descriptor.AddTransient(typeof(GameEvent));
-        descriptor.AddTransient(typeof(GameEvent<>));
-
-        descriptor.AddSingleton(typeof(PlayerScoreModel), typeof(IPlayerScoreModel));
-        descriptor.AddSingleton(typeof(PlayerSkillsModel), typeof(IPlayerSkillsModel));
+        descriptor.AddInstance(ModelCreator<PlayerScoreModel>.Create("lol"), typeof(IPlayerScoreModel));
+        //descriptor.AddInstance(PlayerSkillsModel.Create(PlayerSkillsModel.ModelKey), typeof(IPlayerSkillsModel));
 
         descriptor.AddTransient(typeof(PlayerScorePresenter), typeof(IPlayerScorePresenter));
-        descriptor.AddTransient(typeof(PlayerSkillsPresenter), typeof(IPlayerSkillsPresenter));
+        //descriptor.AddTransient(typeof(PlayerSkillsPresenter), typeof(IPlayerSkillsPresenter));
     }
 }

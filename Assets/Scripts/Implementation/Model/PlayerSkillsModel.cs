@@ -2,9 +2,10 @@ using System.Collections.Generic;
 
 public class PlayerSkillsModel : Model<IPlayerSkillsModel>, IPlayerSkillsModel
 {
-    protected override string ModelKey { get; } = "PlayerSkillsModel";
+    public static string ModelKey { get; } = "PlayerSkillsModel";
 
     private readonly HashSet<PlayerSkill> _playerSkills;
+
     public HashSet<PlayerSkill> Skills => new(_playerSkills);
     public bool IsObtained(PlayerSkill skil) => _playerSkills.Contains(skil);
 

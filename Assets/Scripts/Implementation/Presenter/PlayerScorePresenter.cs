@@ -2,10 +2,11 @@ public class PlayerScorePresenter : Presenter<IPlayerScoreView>, IPlayerScorePre
 {
     private readonly IPlayerScoreModel _scoreModel;
 
-    public PlayerScorePresenter(IPlayerScoreModel scoreModel) :base()
+    public PlayerScorePresenter(IPlayerScoreModel scoreModel, IPlayerScoreView view) :base(view)
     {
         _scoreModel = scoreModel;
 
+        OnScoreChanged(_scoreModel);
         View.OnRequestEarn.Event += Earn;
         _scoreModel.OnModelChanged += OnScoreChanged;
     }

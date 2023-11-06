@@ -8,7 +8,7 @@ public class PlayerSkillsPresenter : Presenter<IPlayerSkillsView>, IPlayerSkills
 
     private PlayerSkill _selectedSkill;
 
-    public PlayerSkillsPresenter(IPlayerSkillsModel playerSkills, IPlayerScoreModel playerScore)
+    public PlayerSkillsPresenter(IPlayerSkillsModel playerSkills, IPlayerScoreModel playerScore, IPlayerSkillsView view):base(view)
     {
         _playerSkills = playerSkills;
         _playerScore = playerScore;

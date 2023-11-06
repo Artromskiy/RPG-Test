@@ -9,8 +9,8 @@ public class PlayerScoreView : View, IPlayerScoreView
     [SerializeField]
     private TextMeshProUGUI _scoreTextCounter;
 
-    public GameEvent OnRequestEarn = new();
-    IGameEvent IPlayerScoreView.OnRequestEarn => OnRequestEarn;
+    private readonly GameEvent _onRequestEarn = new();
+    IGameEvent IPlayerScoreView.OnRequestEarn => _onRequestEarn;
 
     public int Score
     {
@@ -19,12 +19,12 @@ public class PlayerScoreView : View, IPlayerScoreView
 
     private void OnEnable()
     {
-        _earnScoreButton.onClick.AddListener(OnRequestEarn.Invoke);
+        _earnScoreButton.onClick.AddListener(_onRequestEarn.Invoke);
     }
 
     private void OnDisable()
     {
-        _earnScoreButton.onClick.RemoveListener(OnRequestEarn.Invoke);
+        _earnScoreButton.onClick.RemoveListener(_onRequestEarn.Invoke);
     }
 
     private void UpdateScore(int score)

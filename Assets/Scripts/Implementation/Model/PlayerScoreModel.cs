@@ -1,9 +1,15 @@
+using Newtonsoft.Json;
+
 public class PlayerScoreModel : Model<IPlayerScoreModel>, IPlayerScoreModel
 {
+    [JsonProperty]
     private int _score;
 
-    protected override string ModelKey { get; } = "PlayerScoreModel";
-
+    public PlayerScoreModel()
+    {
+        _score = 0;
+    }
+    [JsonIgnore]
     public int Score
     {
         get => _score;

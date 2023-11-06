@@ -12,6 +12,10 @@ public class SceneInstaller : MonoBehaviour, IInstaller
     public void InstallBindings(ContainerDescriptor descriptor)
     {
         descriptor.AddInstance(_playerScoreViewInstance.Value, _playerScoreViewInstance.InterfaceType);
-        descriptor.AddInstance(_playerSkillsViewInstance.Value, _playerSkillsViewInstance.InterfaceType);
+        //descriptor.AddInstance(_playerSkillsViewInstance.Value, _playerSkillsViewInstance.InterfaceType);
+        descriptor.OnContainerBuilt += (c) =>
+        {
+            c.Resolve<IPlayerScorePresenter>();
+        };
     }
 }

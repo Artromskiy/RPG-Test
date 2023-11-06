@@ -1,3 +1,4 @@
+using Reflex.Attributes;
 using System;
 
 public abstract class Presenter<TView> : IPresenter<TView>
@@ -13,7 +14,7 @@ public abstract class Presenter<TView> : IPresenter<TView>
             Dispose(false);
     }
 
-    protected Presenter(TView view = default)
+    protected Presenter(TView view)
     {
         View = view;
     }

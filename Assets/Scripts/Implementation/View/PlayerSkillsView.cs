@@ -12,15 +12,13 @@ public class PlayerSkillsView : View, IPlayerSkillsView
     private readonly GameEvent OnForgetClicked = new();
     private readonly GameEvent OnForgetAllClicked = new();
 
-    [Inject]
+    //[Inject]
     public ISkillGraphConfig SkillGraphConfig { get; private set; }
 
     IGameEvent<PlayerSkill> IPlayerSkillsView.OnSkillClicked => OnSkillClicked;
     IGameEvent IPlayerSkillsView.OnObtainClicked => OnObtainClicked;
     IGameEvent IPlayerSkillsView.OnForgetClicked => OnForgetClicked;
     IGameEvent IPlayerSkillsView.OnForgetAllClicked => OnForgetAllClicked;
-
-
 
     [SerializeField]
     private Button _obtainButton;

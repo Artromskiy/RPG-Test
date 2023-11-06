@@ -309,7 +309,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _earnScoreButton: {fileID: 1633633402}
-  _scoreTextCounter: {fileID: 1943333234}
+  _scoreTextCounter: {fileID: 738307103}
 --- !u!1 &407422863
 GameObject:
   m_ObjectHideFlags: 0
@@ -548,23 +548,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 738307101}
   m_CullTransparentMesh: 1
---- !u!1 &799471712 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2318873827284524826, guid: 263088eba59afab43b75a870beaa7b64, type: 3}
-  m_PrefabInstance: {fileID: 1169813711}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &799471716
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 799471712}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d3a0d1cd5d7ad9a4dafd0a34b68492a2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &830567536
 GameObject:
   m_ObjectHideFlags: 0
