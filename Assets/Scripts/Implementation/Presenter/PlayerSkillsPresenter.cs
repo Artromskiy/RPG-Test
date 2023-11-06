@@ -4,7 +4,7 @@ public class PlayerSkillsPresenter : Presenter<IPlayerSkillsView>, IPlayerSkills
 {
     private readonly IPlayerSkillsModel _playerSkills;
     private readonly IPlayerScoreModel _playerScore;
-    public SkillGraph<PlayerSkill> SkillGraph => View.SkillGraphConfig.ConfigData;
+    public SkillGraph<PlayerSkill> SkillGraph => View.SkillGraphConfig.PlayerSkillGraph;
 
     private PlayerSkill _selectedSkill;
 

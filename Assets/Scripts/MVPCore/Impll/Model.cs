@@ -2,9 +2,11 @@ using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
-
-[JsonObject(MemberSerialization.OptIn)]
+/// <summary>
+/// Base Model class implementing notification of it's changes
+/// </summary>
+/// <typeparam name="T"></typeparam>
+[JsonObject(MemberSerialization.OptIn)] // This attribute forces user to specify serialized data with JsonProprtyAttribute
 public abstract class Model<T> : IModel<T> where T : class, IModel<T>
 {
     private static readonly JsonSerializer _jsonSerializer = JsonSerializer.CreateDefault();

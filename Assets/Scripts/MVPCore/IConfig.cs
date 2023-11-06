@@ -1,4 +1,4 @@
-public interface IConfig<T>
+public interface IConfig
 {
-    public T ConfigData { get; }
+    string ConfigKey { get; }
 }

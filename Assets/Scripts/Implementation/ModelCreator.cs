@@ -1,7 +1,6 @@
 using Newtonsoft.Json;
 using System.IO;
 
-
 public static class ModelCreator<T> where T : class, IModel, new()
 {
     private static readonly JsonSerializer _jsonSerializer = JsonSerializer.CreateDefault();

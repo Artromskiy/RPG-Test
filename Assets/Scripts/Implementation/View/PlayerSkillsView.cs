@@ -1,9 +1,20 @@
 using Reflex.Attributes;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerSkillsView : View, IPlayerSkillsView
 {
+    [SerializeField]
+    private Button _obtainButton;
+    [SerializeField]
+    private Button _forgetButton;
+    [SerializeField]
+    private Button _forgetAllButton;
+    [SerializeField]
+    private List<PlayerSkillView> _playerSkillViews;
+
+
     public bool CanObtainSelected { set; private get; }
     public bool CanForgetSelected { set; private get; }
 
@@ -20,12 +31,11 @@ public class PlayerSkillsView : View, IPlayerSkillsView
     IGameEvent IPlayerSkillsView.OnForgetClicked => OnForgetClicked;
     IGameEvent IPlayerSkillsView.OnForgetAllClicked => OnForgetAllClicked;
 
-    [SerializeField]
-    private Button _obtainButton;
-    [SerializeField]
-    private Button _forgetButton;
-    [SerializeField]
-    private Button _forgetAllButton;
+    private void Start()
+    {
+        //SkillGraphConfig
+        //_playerSkillViews.
+    }
 
     private void OnEnable()
     {

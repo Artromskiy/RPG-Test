@@ -15,7 +15,6 @@ public class PlayerScorePresenter : Presenter<IPlayerScoreView>, IPlayerScorePre
     {
         if (_scoreModel != null)
             _scoreModel.OnModelChanged -= OnScoreChanged;
-
         if(View != null)
             View.OnRequestEarn.Event += Earn;
 

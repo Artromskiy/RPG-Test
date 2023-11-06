@@ -1,4 +1,8 @@
-public class SkillGraphConfig : Config<SkillGraph<PlayerSkill>>, ISkillGraphConfig
+using Newtonsoft.Json;
+
+public class SkillGraphConfig : ISkillGraphConfig
 {
-    protected override string ConfigKey { get; } = "SkillGraphConfig";
+    [JsonProperty]
+    private readonly SkillGraph<PlayerSkill> _skillGraph;
+    public SkillGraph<PlayerSkill> PlayerSkillGraph => _skillGraph;
 }

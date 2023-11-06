@@ -1,1 +1,4 @@
-public interface ISkillGraphConfig : IConfig<SkillGraph<PlayerSkill>> { }
+public interface ISkillGraphConfig
+{
+    SkillGraph<PlayerSkill> PlayerSkillGraph { get; }
+}
