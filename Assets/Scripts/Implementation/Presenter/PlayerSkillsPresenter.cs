@@ -50,7 +50,7 @@ public class PlayerSkillsPresenter : Presenter<IPlayerSkillsView>, IPlayerSkills
     {
         Debug.Assert(CanForget());
 
-        _playerScore.Score += _selectedSkill.price;
+        _playerScore.Score += _selectedSkill.Price;
         _playerSkills.Forget(_selectedSkill);
     }
 
@@ -58,7 +58,7 @@ public class PlayerSkillsPresenter : Presenter<IPlayerSkillsView>, IPlayerSkills
     {
         Debug.Assert(CanObtain());
 
-        _playerScore.Score -= _selectedSkill.price;
+        _playerScore.Score -= _selectedSkill.Price;
         _playerSkills.Obtain(_selectedSkill);
     }
 
@@ -91,7 +91,7 @@ public class PlayerSkillsPresenter : Presenter<IPlayerSkillsView>, IPlayerSkills
         }
         else
         {
-            View.CanObtainSelected = _playerScore.Score >= selectedSkill.price && SkillGraph.IsReachableFromRoot(selectedSkill, _playerSkills.IsObtained);
+            View.CanObtainSelected = _playerScore.Score >= selectedSkill.Price && SkillGraph.IsReachableFromRoot(selectedSkill, _playerSkills.IsObtained);
             View.CanForgetSelected = false;
         }
     }

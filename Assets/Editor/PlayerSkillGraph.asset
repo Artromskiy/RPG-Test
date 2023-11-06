@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbbd1405b1ca2db4ba8b5aa272ef8d0a, type: 3}
+  m_Name: PlayerSkillGraph
+  m_EditorClassIdentifier: 
+  Key: 
+  _root:
+    _id: 0
+    _price: 0
+  skillPrices: 000000000100000003000000030000000400000002000000030000000400000006000000020000000b000000
+  _connections:
+  - from: 0
+    to: 1
+  - from: 0
+    to: 2
+  - from: 0
+    to: 4
+  - from: 0
+    to: 8
+  - from: 0
+    to: 9
+  - from: 2
+    to: 3
+  - from: 4
+    to: 5
+  - from: 4
+    to: 6
+  - from: 5
+    to: 7
+  - from: 6
+    to: 7
+  - from: 8
+    to: 10
+  - from: 9
+    to: 10

@@ -1,15 +1,20 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using UnityEngine;
 
+[Serializable]
 public class PlayerSkill : IEquatable<PlayerSkill>
 {
-    public readonly int id;
-    public readonly int price;
+    [SerializeField]
+    private int _id;
+    [SerializeField]
+    private int _price;
+
+    public int Id => _id;
+    public int Price => _price;
 
     public bool Equals(PlayerSkill other)
     {
-        return id == other.id;
+        return Id == other.Id;
     }
 
     public override bool Equals(object obj)
@@ -19,6 +24,6 @@ public class PlayerSkill : IEquatable<PlayerSkill>
 
     public override int GetHashCode()
     {
-        return id.GetHashCode();
+        return Id.GetHashCode();
     }
 }
