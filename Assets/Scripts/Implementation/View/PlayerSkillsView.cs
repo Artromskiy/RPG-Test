@@ -11,12 +11,10 @@ public class PlayerSkillsView : View, IPlayerSkillsView
     private Button _forgetButton;
     [SerializeField]
     private Button _forgetAllButton;
+
     [SerializeField]
-    private List<PlayerSkillView> _playerSkillViews;
-    [SerializeField]
-    private PlayerSkillConnection _connectionPrefab;
-    [SerializeField]
-    private Dictionary<PlayerSkill, PlayerSkillView> _skillToView;
+    private List<SkillViewPair> _playerSkillViews; // SkillViewPair created to avoid mixing of data and view
+    private readonly Dictionary<PlayerSkill, PlayerSkillView> _skillToView = new(); // The best way is to use Odin serializer/editor instead of such workarounds
 
     public bool CanObtainSelected { get; set; }
     public bool CanForgetSelected { get; set; }
@@ -33,13 +31,20 @@ public class PlayerSkillsView : View, IPlayerSkillsView
     public ISkillGraphConfig SkillGraphConfig { get; private set; }
 
 
-    private void Start()
+    private void Awake()
     {
-
+        foreach (var item in _playerSkillViews)
+            _skillToView.Add(item.Skill, item.View);
     }
 
     [Inject]
-    private void CreateConnections(ISkillGraphConfig config)
+    private void Init(ISkillGraphConfig config)
+    {
+        SkillGraphConfig = config;
+        CreateConnections();
+    }
+
+    private void CreateConnections()
     {
         var graph = SkillGraphConfig.PlayerSkillGraph;
         foreach (var item in graph)

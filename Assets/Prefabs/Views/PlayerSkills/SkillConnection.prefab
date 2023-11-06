@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6305919958079300096}
   - component: {fileID: 8081457582451530071}
   - component: {fileID: 6901649067964017899}
+  - component: {fileID: 587183220424259328}
   m_Layer: 5
   m_Name: SkillConnection
   m_TagString: Untagged
@@ -79,3 +80,16 @@ MonoBehaviour:
   LineJoins: 0
   BezierMode: 0
   drivenExternally: 0
+--- !u!114 &587183220424259328
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2882674752372805598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf057d422c28d5d45bf9d9c351e356af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _lineComponent: {fileID: 6901649067964017899}
