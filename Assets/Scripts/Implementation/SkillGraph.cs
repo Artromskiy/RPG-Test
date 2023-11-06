@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 /// <summary>
 /// Immutable collection that stores objects and
@@ -7,7 +9,7 @@ using System.Collections.Generic;
 /// between objects
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public class SkillGraph<T>
+public class SkillGraph<T> : IEnumerable<T>
 {
     private readonly T _root;
     private readonly Dictionary<T, HashSet<T>> _data;
@@ -209,7 +211,7 @@ public class SkillGraph<T>
         return true;
     }
 
-    public HashSet<T>? GetNear(T search)
+    public HashSet<T> GetConnections(T search)
     {
         if (_data.TryGetValue(search, out var result))
             return result;
@@ -273,4 +275,28 @@ public class SkillGraph<T>
         }
         return true;
     }
+
+    public readonly struct ConnectionEnumerator : IEnumerable<T>
+    {
+        private readonly HashSet<T> _enumerator;
+        public IEnumerator<T> GetEnumerator() => _enumerator.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        public ConnectionEnumerator(HashSet<T> hashSet)
+        {
+            Debug.Assert(hashSet != null);
+            _enumerator = hashSet;
+        }
+    }
+
+
+    public ConnectionEnumerator EnumerateConnections(T key)
+    {
+        if (!_data.ContainsKey(key))
+            throw new ArgumentException(nameof(key));
+        return new(_data[key]);
+    }
+
+    public IEnumerator<T> GetEnumerator() => _data.Keys.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

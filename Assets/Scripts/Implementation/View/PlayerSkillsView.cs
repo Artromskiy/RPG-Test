@@ -13,28 +13,40 @@ public class PlayerSkillsView : View, IPlayerSkillsView
     private Button _forgetAllButton;
     [SerializeField]
     private List<PlayerSkillView> _playerSkillViews;
+    [SerializeField]
+    private PlayerSkillConnection _connectionPrefab;
+    [SerializeField]
+    private Dictionary<PlayerSkill, PlayerSkillView> _skillToView;
 
-
-    public bool CanObtainSelected { set; private get; }
-    public bool CanForgetSelected { set; private get; }
+    public bool CanObtainSelected { get; set; }
+    public bool CanForgetSelected { get; set; }
 
     private readonly GameEvent<PlayerSkill> OnSkillClicked = new();
     private readonly GameEvent OnObtainClicked = new();
     private readonly GameEvent OnForgetClicked = new();
     private readonly GameEvent OnForgetAllClicked = new();
 
-    //[Inject]
-    public ISkillGraphConfig SkillGraphConfig { get; private set; }
-
     IGameEvent<PlayerSkill> IPlayerSkillsView.OnSkillClicked => OnSkillClicked;
     IGameEvent IPlayerSkillsView.OnObtainClicked => OnObtainClicked;
     IGameEvent IPlayerSkillsView.OnForgetClicked => OnForgetClicked;
     IGameEvent IPlayerSkillsView.OnForgetAllClicked => OnForgetAllClicked;
+    public ISkillGraphConfig SkillGraphConfig { get; private set; }
+
 
     private void Start()
     {
-        //SkillGraphConfig
-        //_playerSkillViews.
+
+    }
+
+    [Inject]
+    private void CreateConnections(ISkillGraphConfig config)
+    {
+        var graph = SkillGraphConfig.PlayerSkillGraph;
+        foreach (var item in graph)
+            if (_skillToView.TryGetValue(item, out var skillView))
+                foreach (var connection in graph.EnumerateConnections(item))
+                    if (_skillToView.TryGetValue(connection, out var skillViewToConnect))
+                        skillView.Connect(skillViewToConnect);
     }
 
     private void OnEnable()

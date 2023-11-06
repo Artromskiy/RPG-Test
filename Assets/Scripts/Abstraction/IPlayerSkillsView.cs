@@ -1,11 +1,11 @@
 public interface IPlayerSkillsView : IView
 {
-    public IGameEvent<PlayerSkill> OnSkillClicked { get; }
-    public IGameEvent OnObtainClicked { get; }
-    public IGameEvent OnForgetClicked { get; }
-    public IGameEvent OnForgetAllClicked { get; }
-    public bool CanObtainSelected { set; }
-    public bool CanForgetSelected { set; }
+    IGameEvent<PlayerSkill> OnSkillClicked { get; }
+    IGameEvent OnObtainClicked { get; }
+    IGameEvent OnForgetClicked { get; }
+    IGameEvent OnForgetAllClicked { get; }
+    bool CanObtainSelected { set; }
+    bool CanForgetSelected { set; }
 
     /// <summary>
     /// This is workaround.

@@ -84,7 +84,7 @@ public class PlayerSkillsPresenter : Presenter<IPlayerSkillsView>, IPlayerSkills
         if (_playerSkills.IsObtained(selectedSkill))
         {
             var obtainedSkillsNearSelected = _playerSkills.Skills;
-            obtainedSkillsNearSelected.IntersectWith(SkillGraph.GetNear(_selectedSkill));
+            obtainedSkillsNearSelected.IntersectWith(SkillGraph.GetConnections(_selectedSkill));
 
             View.CanForgetSelected = SkillGraph.IsAllReachable(obtainedSkillsNearSelected, selectedSkill);
             View.CanObtainSelected = false;
@@ -107,7 +107,7 @@ public class PlayerSkillsPresenter : Presenter<IPlayerSkillsView>, IPlayerSkills
             return false;
 
         var obtainedSkillsNearSelected = _playerSkills.Skills;
-        obtainedSkillsNearSelected.IntersectWith(SkillGraph.GetNear(_selectedSkill));
+        obtainedSkillsNearSelected.IntersectWith(SkillGraph.GetConnections(_selectedSkill));
 
         return _selectedSkill != null && _playerSkills.IsObtained(_selectedSkill) && SkillGraph.IsAllReachable(obtainedSkillsNearSelected, _selectedSkill);
     }
