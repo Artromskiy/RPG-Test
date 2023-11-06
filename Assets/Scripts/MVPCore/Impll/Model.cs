@@ -7,8 +7,8 @@ public abstract class Model<T> : IModel<T> where T : class, IModel<T>
 {
     public event Action<T> OnModelChanged;
     protected abstract string ModelKey { get; }
-
     private static readonly JsonSerializer _jsonSerializer = JsonSerializer.CreateDefault();
+
 
     private void Save()
     {
