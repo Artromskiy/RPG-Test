@@ -13,7 +13,7 @@ public class PlayerScoreModel : Model<IPlayerScoreModel>, IPlayerScoreModel
     {
         _score = 0;
     }
-    [JsonIgnore]
+
     public int Score
     {
         get => _score;

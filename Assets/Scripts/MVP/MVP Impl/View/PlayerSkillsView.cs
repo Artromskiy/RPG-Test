@@ -18,7 +18,8 @@ public class PlayerSkillsView : View<IPlayerSkillsPresenter>, IPlayerSkillsView
     private RectTransform _priceHolder;
     [SerializeField]
     private TextMeshProUGUI _priceText;
-    
+    [SerializeField]
+    private Button _backgroundButton;
 
     /// <summary>
     /// This is workaround.
@@ -51,7 +52,8 @@ public class PlayerSkillsView : View<IPlayerSkillsPresenter>, IPlayerSkillsView
             _playerSkillViews[i].SetId(i);
             _playerSkillViews[i].OnClick += _onSkillClicked.Invoke;
         }
- 
+
+        _backgroundButton.onClick.AddListener(OnBackgroundClicked);
         _obtainButton.onClick.AddListener(_onObtainClicked.Invoke);
         _forgetButton.onClick.AddListener(_onForgetClicked.Invoke);
         _forgetAllButton.onClick.AddListener(_onForgetAllClicked.Invoke);
@@ -60,21 +62,33 @@ public class PlayerSkillsView : View<IPlayerSkillsPresenter>, IPlayerSkillsView
         Presenter.CanObtain.Event += _obtainButton.gameObject.SetActive;
         Presenter.SelectedSkillId.Event += HighlightSkill;
         Presenter.Price.Event += UpdatePrice;
+
+        _forgetButton.gameObject.SetActive(Presenter.CanForget.Value);
+        _obtainButton.gameObject.SetActive(Presenter.CanObtain.Value);
+        HighlightSkill(Presenter.SelectedSkillId.Value);
+        UpdatePrice(Presenter.Price.Value);
     }
     protected override void Dispose(bool disposing)
     {
         if (disposing)
         {
+            _backgroundButton.onClick.RemoveListener(OnBackgroundClicked);
             _obtainButton.onClick.RemoveListener(_onObtainClicked.Invoke);
             _forgetButton.onClick.RemoveListener(_onForgetClicked.Invoke);
             _forgetAllButton.onClick.RemoveListener(_onForgetAllClicked.Invoke);
-
+            
             Presenter.CanForget.Event -= _forgetButton.gameObject.SetActive;
             Presenter.CanObtain.Event -= _obtainButton.gameObject.SetActive;
             Presenter.SelectedSkillId.Event -= HighlightSkill;
             Presenter.Price.Event -= UpdatePrice;
         }
+
         base.Dispose(disposing);
+    }
+
+    private void OnBackgroundClicked()
+    {
+        _onSkillClicked?.Invoke(null);
     }
 
     private void UpdatePrice(int? price)
@@ -82,7 +96,10 @@ public class PlayerSkillsView : View<IPlayerSkillsPresenter>, IPlayerSkillsView
         if (price == null)
             _priceHolder.gameObject.SetActive(false);
         else
+        {
+            _priceHolder.gameObject.SetActive(true);
             _priceText.text = price.Value.ToString();
+        }
     }
 
     private void HighlightSkill(int? skillId)
@@ -94,8 +111,6 @@ public class PlayerSkillsView : View<IPlayerSkillsPresenter>, IPlayerSkillsView
         else
             (_selectedNode = _playerSkillViews[skillId.Value]).Highlight(true);
     }
-
-
 
     public void SetConnections(ReadOnlySpan<(int element1, int element2)> conncections)
     {

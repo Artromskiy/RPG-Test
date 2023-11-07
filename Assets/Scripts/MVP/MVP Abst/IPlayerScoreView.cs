@@ -2,5 +2,5 @@ using System;
 public interface IPlayerScoreView : IView
 {
     public IGameEvent OnRequestEarn { get; }
-    public int Score { set; }
+    public IGameEvent OnRequestLoseAll { get; }
 }

@@ -76,6 +76,8 @@ public class Graph<TKey, TValue> : IEnumerable<Graph<TKey, TValue>.Connection> w
         return new(_connections);
     }
 
+    public bool IsRoot(TKey key) => _data.ContainsKey(key) && _root.Equals(key);
+
     /// <summary>
     /// Spicifies if graph contains node with input key
     /// </summary>
@@ -104,9 +106,6 @@ public class Graph<TKey, TValue> : IEnumerable<Graph<TKey, TValue>.Connection> w
     {
         skip ??= _defaultSkipDelegate;
 
-        if (skip(search))
-            return false;
-
         if (!_data.ContainsKey(search))
             return false;
 
@@ -120,7 +119,7 @@ public class Graph<TKey, TValue> : IEnumerable<Graph<TKey, TValue>.Connection> w
         _searchedVertices.Add(_root);
 
         foreach (var vertex in _data)
-            if (skip(vertex.Key))
+            if (!vertex.Key.Equals(search) && skip(vertex.Key))
                 _searchedVertices.Add(vertex.Key);
 
         while (_searchQueue.Count != 0)
@@ -142,7 +141,7 @@ public class Graph<TKey, TValue> : IEnumerable<Graph<TKey, TValue>.Connection> w
     }
 
     public bool IsRootReachable(TValue search, Predicate<TValue> skip = null) => IsRootReachable(search.Key, x => skip(this[x].value));
-    public bool IsRootReachable(TValue from, Predicate<TKey> skip = null) => IsReachableFromRoot(from.Key, skip);
+    public bool IsRootReachable(TValue from, Predicate<TKey> skip = null) => IsRootReachable(from.Key, skip);
     /// <summary>
     /// Checks if element is still reachable from root
     /// even if some vertices will be skipped during from
@@ -237,9 +236,6 @@ public class Graph<TKey, TValue> : IEnumerable<Graph<TKey, TValue>.Connection> w
     public bool IsReachableFromRoot(TKey search, TValue skip) => IsReachableFromRoot(search, skip);
     public bool IsReachableFromRoot(TKey search, TKey skip)
     {
-        if (skip.Equals(search))
-            return false;
-
         if (!_data.ContainsKey(search))
             return false;
 

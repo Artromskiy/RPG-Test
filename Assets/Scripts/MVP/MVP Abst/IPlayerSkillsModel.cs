@@ -8,5 +8,6 @@ public interface IPlayerSkillsModel : IEnumerable<PlayerSkill>, IModel<IPlayerSk
     public void Forget(PlayerSkill skill);
     public IGameEvent<PlayerSkill> OnSkillObtained { get; }
     public IGameEvent<PlayerSkill> OnSkillForgotten { get; }
+    public IGameEvent OnAllForgotten { get; }
     public void Clear();
 }

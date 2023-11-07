@@ -10,11 +10,16 @@ public abstract class View<TPresenter> : MonoBehaviour, IView
     private bool _disposed;
     protected TPresenter Presenter { get; private set; }
     [Inject]
-    public void Init(TPresenter presenter)
+    public void Init(TPresenter presenter) //Must be public to provide injection on mono
     {
         Presenter = presenter;
         Init();
     }
+    /// <summary>
+    /// Basic init method
+    /// Must be used instead of Start
+    /// Called after Presenter injection;
+    /// </summary>
     protected abstract void Init();
 
     ~View()
