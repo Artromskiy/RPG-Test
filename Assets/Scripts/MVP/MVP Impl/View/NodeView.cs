@@ -26,7 +26,7 @@ public class NodeView : MonoBehaviour
         _skillButton.onClick.AddListener(Click);
     }
 
-    public void Highlight(bool value)=> _highlight.gameObject.SetActive(value);
+    public void Highlight(bool value) => _highlight.gameObject.SetActive(value);
     private void Click() => OnClick?.Invoke(_id);
     public void SetId(int value)
     {

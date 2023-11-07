@@ -1,4 +1,3 @@
-using Reflex.Attributes;
 using System;
 
 public abstract class Presenter<TView> : IPresenter<TView>

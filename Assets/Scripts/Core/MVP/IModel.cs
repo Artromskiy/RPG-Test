@@ -1,6 +1,4 @@
-using System;
-
-public interface IModel<T> : IModel where T:class, IModel<T>
+public interface IModel<T> : IModel where T : class, IModel<T>
 {
     IGameEvent<T> OnModelChanged { get; }
 }

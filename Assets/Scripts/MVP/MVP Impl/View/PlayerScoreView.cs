@@ -20,7 +20,7 @@ public class PlayerScoreView : View<IPlayerScorePresenter>, IPlayerScoreView
     {
         _earnScoreButton.onClick.AddListener(_onRequestEarn.Invoke);
         _loseAllButton.onClick.AddListener(_onRequestLoseAll.Invoke);
-        
+
         Presenter.Score.Event += UpdateScore;
 
         UpdateScore(Presenter.Score.Value);
@@ -31,7 +31,7 @@ public class PlayerScoreView : View<IPlayerScorePresenter>, IPlayerScoreView
         {
             _earnScoreButton.onClick.RemoveListener(_onRequestEarn.Invoke);
             _loseAllButton.onClick.RemoveListener(_onRequestLoseAll.Invoke);
-            
+
             Presenter.Score.Event -= UpdateScore;
         }
 

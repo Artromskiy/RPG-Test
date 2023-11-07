@@ -1,5 +1,4 @@
 using Newtonsoft.Json;
-using System;
 
 public class PlayerScoreModel : Model<IPlayerScoreModel>, IPlayerScoreModel
 {
@@ -7,7 +6,7 @@ public class PlayerScoreModel : Model<IPlayerScoreModel>, IPlayerScoreModel
     private int _score;
 
     private readonly GameEvent<int> _onScoreChanged = new();
-    public IGameEvent<int> OnScoreChanged=> _onScoreChanged;
+    public IGameEvent<int> OnScoreChanged => _onScoreChanged;
 
     public PlayerScoreModel()
     {

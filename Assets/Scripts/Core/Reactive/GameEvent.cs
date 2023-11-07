@@ -12,7 +12,7 @@ public sealed class GameEvent : IGameEvent
     public event Action Event;
     public void Invoke() => Event?.Invoke();
     public void Clear() => Event = null;
-}   
+}
 
 /// <summary>
 /// Objects of this class encapsulate event

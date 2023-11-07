@@ -5,7 +5,7 @@ public class PlayerScorePresenter : Presenter<IPlayerScoreView>, IPlayerScorePre
     private readonly ReactiveField<int> _playerScore = new();
     IReactiveField<int> IPlayerScorePresenter.Score => _playerScore;
 
-    public PlayerScorePresenter(IPlayerScoreModel scoreModel, IPlayerScoreView view) :base(view)
+    public PlayerScorePresenter(IPlayerScoreModel scoreModel, IPlayerScoreView view) : base(view)
     {
         _scoreModel = scoreModel;
 

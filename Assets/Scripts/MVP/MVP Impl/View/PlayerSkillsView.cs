@@ -76,7 +76,7 @@ public class PlayerSkillsView : View<IPlayerSkillsPresenter>, IPlayerSkillsView
             _obtainButton.onClick.RemoveListener(_onObtainClicked.Invoke);
             _forgetButton.onClick.RemoveListener(_onForgetClicked.Invoke);
             _forgetAllButton.onClick.RemoveListener(_onForgetAllClicked.Invoke);
-            
+
             Presenter.CanForget.Event -= _forgetButton.gameObject.SetActive;
             Presenter.CanObtain.Event -= _obtainButton.gameObject.SetActive;
             Presenter.SelectedSkillId.Event -= HighlightSkill;

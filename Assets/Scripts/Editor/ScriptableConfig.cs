@@ -1,10 +1,13 @@
 using Newtonsoft.Json;
-using System.IO;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using UnityEngine;
 
+/// <summary>
+/// Workaround to create and save config inside editor
+/// </summary>
 [CreateAssetMenu(menuName = "Scriptables/ScriptableConfig")]
 public class ScriptableConfig : ScriptableObject
 {

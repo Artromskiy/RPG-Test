@@ -60,6 +60,10 @@ public class Graph<TKey, TValue> : IEnumerable<Graph<TKey, TValue>.Connection> w
             throw new ArgumentException(message);
     }
 
+    /// <summary>
+    /// Returns Key to Key pairs of connected nodes
+    /// </summary>
+    /// <returns></returns>
     public ReadOnlySpan<(TKey element1, TKey element2)> GetConnections()
     {
         if (_connections == null)
@@ -76,6 +80,11 @@ public class Graph<TKey, TValue> : IEnumerable<Graph<TKey, TValue>.Connection> w
         return new(_connections);
     }
 
+    /// <summary>
+    /// Returns true if specified key is root of graph
+    /// </summary>
+    /// <param name="key"></param>
+    /// <returns></returns>
     public bool IsRoot(TKey key) => _data.ContainsKey(key) && _root.Equals(key);
 
     /// <summary>
@@ -142,9 +151,10 @@ public class Graph<TKey, TValue> : IEnumerable<Graph<TKey, TValue>.Connection> w
 
     public bool IsRootReachable(TValue search, Predicate<TValue> skip = null) => IsRootReachable(search.Key, x => skip(this[x].value));
     public bool IsRootReachable(TValue from, Predicate<TKey> skip = null) => IsRootReachable(from.Key, skip);
+
     /// <summary>
     /// Checks if element is still reachable from root
-    /// even if some vertices will be skipped during from
+    /// even if some vertices will be skipped during search
     /// </summary>
     /// <param name="from"></param>
     /// <param name="skip"></param>
@@ -194,6 +204,15 @@ public class Graph<TKey, TValue> : IEnumerable<Graph<TKey, TValue>.Connection> w
     public bool IsRootReachable(TValue search, TValue skip) => IsRootReachable(search.Key, skip.Key);
     public bool IsRootReachable(TValue from, TKey skip) => IsRootReachable(from.Key, skip);
     public bool IsRootReachable(TKey from, TValue skip) => IsRootReachable(from, skip.Key);
+
+
+    /// <summary>
+    /// Checks if root is still reachable from specified node
+    /// even if some vertices will be skipped during search
+    /// </summary>
+    /// <param name="from"></param>
+    /// <param name="skip"></param>
+    /// <returns></returns>
     public bool IsRootReachable(TKey from, TKey skip)
     {
         if (skip.Equals(from))
@@ -234,6 +253,14 @@ public class Graph<TKey, TValue> : IEnumerable<Graph<TKey, TValue>.Connection> w
     public bool IsReachableFromRoot(TValue search, TValue skip) => IsReachableFromRoot(search.Key, skip.Key);
     public bool IsReachableFromRoot(TValue search, TKey skip) => IsReachableFromRoot(search.Key, skip);
     public bool IsReachableFromRoot(TKey search, TValue skip) => IsReachableFromRoot(search, skip);
+
+    /// <summary>
+    /// Checks if specified node is still reachable from root
+    /// even if some vertices will be skipped during search
+    /// </summary>
+    /// <param name="from"></param>
+    /// <param name="skip"></param>
+    /// <returns></returns>
     public bool IsReachableFromRoot(TKey search, TKey skip)
     {
         if (!_data.ContainsKey(search))
@@ -269,7 +296,7 @@ public class Graph<TKey, TValue> : IEnumerable<Graph<TKey, TValue>.Connection> w
     }
 
     /// <summary>
-    /// Connection class that stores node to specified value
+    /// Connection class that stores node and it's connections
     /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
     public readonly struct Connection : IEnumerable<TKey>

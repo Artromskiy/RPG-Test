@@ -26,7 +26,7 @@ public class PlayerSkillsPresenter : Presenter<IPlayerSkillsView>, IPlayerSkills
         _selectedSkillId.Event += ResolveSelection;
 
         View.SetConnections(Graph.GetConnections());
-        
+
         View.OnForgetAllClicked.Event += ForgetAll;
         View.OnForgetClicked.Event += Forget;
         View.OnObtainClicked.Event += Obtain;

@@ -73,7 +73,7 @@ public class ReactiveField<T> : IReactiveField<T>
             return;
 
         _invoking = true;
-        _value= data;
+        _value = data;
         InvokeInternal();
         _invoking = false;
 
@@ -112,10 +112,9 @@ public class ReactiveField<T> : IReactiveField<T>
             this.action = action;
             this.value = value;
         }
-        public static QueuedAction AddAction(Action<T> action) => new QueuedAction(ActionType.Add, action, default);
-        public static QueuedAction RemoveAction(Action<T> action) => new QueuedAction(ActionType.Remove, action, default);
-        public static QueuedAction InvokeAction(T value) => new QueuedAction(ActionType.Invoke, default, value);
-
+        public static QueuedAction AddAction(Action<T> action) => new(ActionType.Add, action, default);
+        public static QueuedAction RemoveAction(Action<T> action) => new(ActionType.Remove, action, default);
+        public static QueuedAction InvokeAction(T value) => new(ActionType.Invoke, default, value);
     }
     private enum ActionType
     {

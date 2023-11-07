@@ -8,6 +8,6 @@ public class NodeConnection : MonoBehaviour
 
     public void AddConnection(NodeView skill1, NodeView skill2)
     {
-        _lineConnector.transforms = new RectTransform[] { skill1.RectTransform, skill2.RectTransform}; 
+        _lineConnector.transforms = new RectTransform[] { skill1.RectTransform, skill2.RectTransform };
     }
 }
