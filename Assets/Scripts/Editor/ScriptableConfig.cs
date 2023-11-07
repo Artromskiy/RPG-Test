@@ -16,10 +16,10 @@ public class ScriptableConfig : ScriptableObject
     [SerializeField]
     private List<int> skillPrices;
     [SerializeField]
-    private List<PlayerSkillConnection> _connections;
+    private List<NodeConnection> _connections;
 
     [Serializable]
-    private struct PlayerSkillConnection
+    private struct NodeConnection
     {
         public int from;
         public int to;

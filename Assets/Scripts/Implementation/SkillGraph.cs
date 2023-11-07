@@ -18,6 +18,8 @@ public class Graph<TKey, TValue> : IEnumerable<Graph<TKey, TValue>.Connection> w
     [JsonProperty]
     private readonly Dictionary<TKey, Connection> _data;
 
+    private (TKey element1, TKey element2)[] _connections;
+
     /// <summary>
     /// cached empty delegate
     /// </summary>
@@ -34,12 +36,15 @@ public class Graph<TKey, TValue> : IEnumerable<Graph<TKey, TValue>.Connection> w
 
     public Connection this[TKey key] => _data[key];
 
+    public TKey Root => _root;
 
     static Graph()
     {
         _defaultSkipDelegate = (_) => false;
     }
 
+    [JsonConstructor]
+    private Graph() { }
     public Graph(TKey root, Dictionary<TValue, HashSet<TValue>> data)
     {
         _root = root;
@@ -55,9 +60,39 @@ public class Graph<TKey, TValue> : IEnumerable<Graph<TKey, TValue>.Connection> w
             throw new ArgumentException(message);
     }
 
+    public ReadOnlySpan<(TKey element1, TKey element2)> GetConnections()
+    {
+        if (_connections == null)
+        {
+            HashSet<(TKey element1, TKey element2)> uniquePairs = new();
+            foreach (var node in _data)
+                foreach (var connected in node.Value)
+                    uniquePairs.Add((node.Key, connected));
+            _connections = new (TKey element1, TKey element2)[uniquePairs.Count];
+            int indexer = 0;
+            foreach (var item in uniquePairs)
+                _connections[indexer++] = item;
+        }
+        return new(_connections);
+    }
+
+    /// <summary>
+    /// Spicifies if graph contains node with input key
+    /// </summary>
+    /// <param name="key">Key to search</param>
+    /// <returns></returns>
+    public bool Contains(TKey key) => _data.ContainsKey(key);
+    /// <summary>
+    /// Spicifies if graph contains node
+    /// </summary>
+    /// <param name="value">Node to search</param>
+    /// <returns></returns>
+    public bool Contains(TValue value) => Contains(value.Key);
+
+
     public bool IsReachableFromRoot(TValue search, Predicate<TValue> skip = null) => IsReachableFromRoot(search.Key, x => skip(this[x].value));
-    public bool IsReachableFromRoot(TValue search, Predicate<TKey> skip = null) => IsReachableFromRoot(search.Key, skip);
     public bool IsReachableFromRoot(TKey search, Predicate<TValue> skip = null) => IsReachableFromRoot(search, x => skip(this[x].value));
+    public bool IsReachableFromRoot(TValue search, Predicate<TKey> skip = null) => IsReachableFromRoot(search.Key, skip);
     /// <summary>
     /// Checks if element with specified value is still reachable from root
     /// even if some vertices will be skipped during value
@@ -108,7 +143,6 @@ public class Graph<TKey, TValue> : IEnumerable<Graph<TKey, TValue>.Connection> w
 
     public bool IsRootReachable(TValue search, Predicate<TValue> skip = null) => IsRootReachable(search.Key, x => skip(this[x].value));
     public bool IsRootReachable(TValue from, Predicate<TKey> skip = null) => IsReachableFromRoot(from.Key, skip);
-    public bool IsRootReachable(TKey from, Predicate<TValue> skip = null) => IsReachableFromRoot(from, x => skip(this[x].value));
     /// <summary>
     /// Checks if element is still reachable from root
     /// even if some vertices will be skipped during from
@@ -238,13 +272,31 @@ public class Graph<TKey, TValue> : IEnumerable<Graph<TKey, TValue>.Connection> w
         return false;
     }
 
-    public Connection GetConnections(TValue search) => GetConnections(search.Key);
-    public Connection GetConnections(TKey key)
+    /// <summary>
+    /// Connection class that stores node to specified value
+    /// </summary>
+    [JsonObject(MemberSerialization.OptIn)]
+    public readonly struct Connection : IEnumerable<TKey>
     {
-        if (_data.TryGetValue(key, out var result))
-            return result;
-        throw new ArgumentException();
+        [JsonProperty]
+        public readonly TValue value;
+        [JsonProperty]
+        private readonly HashSet<TKey> _hashset;
+        public IEnumerator<TKey> GetEnumerator() => _hashset.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        public bool Contains(TKey value) => _hashset.Contains(value);
+        public bool Contains(TValue value) => _hashset.Contains(value.Key);
+
+        public Connection(TValue value, HashSet<TKey> hashSet)
+        {
+            Debug.Assert(hashSet != null);
+            this.value = value;
+            _hashset = hashSet;
+        }
     }
+    public IEnumerator<Connection> GetEnumerator() => _data.Values.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     /// <summary>
     /// Checks the correctness of the graph.
@@ -304,29 +356,4 @@ public class Graph<TKey, TValue> : IEnumerable<Graph<TKey, TValue>.Connection> w
         return true;
     }
 
-    /// <summary>
-    /// Connection class that stores connection to specified value
-    /// </summary>
-    [JsonObject(MemberSerialization.OptIn)]
-    public readonly struct Connection : IEnumerable<TKey>
-    {
-        [JsonProperty]
-        public readonly TValue value;
-        [JsonProperty]
-        private readonly HashSet<TKey> _hashset;
-        public IEnumerator<TKey> GetEnumerator() => _hashset.GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-        public bool Contains(TKey value) => _hashset.Contains(value);
-        public bool Contains(TValue value) => _hashset.Contains(value.Key);
-
-        public Connection(TValue value, HashSet<TKey> hashSet)
-        {
-            Debug.Assert(hashSet != null);
-            this.value = value;
-            _hashset = hashSet;
-        }
-    }
-    public IEnumerator<Connection> GetEnumerator() => _data.Values.GetEnumerator();
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

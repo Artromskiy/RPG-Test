@@ -2,9 +2,10 @@ using System;
 
 public interface IModel<T> : IModel where T:class, IModel<T>
 {
-    event Action<T> OnModelChanged;
+    IGameEvent<T> OnModelChanged { get; }
 }
 public interface IModel
 {
     string ModelKey { set; }
+    void Save();
 }

@@ -8,13 +8,13 @@ public class PlayerScorePresenter : Presenter<IPlayerScoreView>, IPlayerScorePre
 
         OnScoreChanged(_scoreModel);
         View.OnRequestEarn.Event += Earn;
-        _scoreModel.OnModelChanged += OnScoreChanged;
+        _scoreModel.OnModelChanged.Event += OnScoreChanged;
     }
 
     protected override void Dispose(bool disposing)
     {
         if (_scoreModel != null)
-            _scoreModel.OnModelChanged -= OnScoreChanged;
+            _scoreModel.OnModelChanged.Event -= OnScoreChanged;
         if(View != null)
             View.OnRequestEarn.Event += Earn;
 

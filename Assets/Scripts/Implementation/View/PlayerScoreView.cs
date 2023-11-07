@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerScoreView : View, IPlayerScoreView
+public class PlayerScoreView : View<IPlayerScorePresenter>, IPlayerScoreView
 {
     [SerializeField]
     private Button _earnScoreButton;
@@ -12,19 +12,21 @@ public class PlayerScoreView : View, IPlayerScoreView
     private readonly GameEvent _onRequestEarn = new();
     IGameEvent IPlayerScoreView.OnRequestEarn => _onRequestEarn;
 
-    public int Score
-    {
-        set => UpdateScore(value);
-    }
-
-    private void OnEnable()
+    protected override void Init()
     {
         _earnScoreButton.onClick.AddListener(_onRequestEarn.Invoke);
     }
-
-    private void OnDisable()
+    protected override void Dispose(bool disposing)
     {
-        _earnScoreButton.onClick.RemoveListener(_onRequestEarn.Invoke);
+        if (disposing)
+        {
+            _earnScoreButton.onClick.RemoveListener(_onRequestEarn.Invoke);
+        }
+    }
+
+    public int Score
+    {
+        set => UpdateScore(value);
     }
 
     private void UpdateScore(int score)

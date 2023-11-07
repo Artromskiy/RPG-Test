@@ -1,119 +1,156 @@
-using System.Diagnostics;
-
 public class PlayerSkillsPresenter : Presenter<IPlayerSkillsView>, IPlayerSkillsPresenter
 {
+    private readonly ISkillGraphConfig _skillGraph;
     private readonly IPlayerSkillsModel _playerSkills;
     private readonly IPlayerScoreModel _playerScore;
-    public Graph<int, PlayerSkill> Graph => View.SkillGraphConfig.PlayerSkillGraph;
 
-    private PlayerSkill _selectedSkill;
+    private readonly ReactiveField<int?> _selectedSkillId = new();
+    private readonly ReactiveField<bool> _canForget = new();
+    private readonly ReactiveField<bool> _canObtain = new();
+    private readonly ReactiveField<int?> _price = new();
 
-    public PlayerSkillsPresenter(IPlayerSkillsModel playerSkills, IPlayerScoreModel playerScore, IPlayerSkillsView view) : base(view)
+    public IReactiveField<int?> SelectedSkillId => _selectedSkillId;
+    public IReactiveField<bool> CanForget => _canForget;
+    public IReactiveField<bool> CanObtain => _canObtain;
+    public IReactiveField<int?> Price => _price;
+
+    private Graph<int, PlayerSkill> Graph => _skillGraph.SkillGraph;
+    private PlayerSkill SelectedSkill => _selectedSkillId.Value == null ? null : Graph[_selectedSkillId.Value.Value].value;
+
+    public PlayerSkillsPresenter(ISkillGraphConfig skillGraph, IPlayerSkillsModel playerSkills, IPlayerScoreModel playerScore, IPlayerSkillsView view) : base(view)
     {
+        _skillGraph = skillGraph;
         _playerSkills = playerSkills;
         _playerScore = playerScore;
 
-        _playerSkills.OnModelChanged += OnSkillsChanged;
-        _playerScore.OnModelChanged += OnScoreChanged;
+        _selectedSkillId.Event += ResolveSelection;
 
+        View.SetConnections(Graph.GetConnections());
         View.OnForgetAllClicked.Event += ForgetAll;
         View.OnForgetClicked.Event += Forget;
         View.OnObtainClicked.Event += Obtain;
-        View.OnSkillClicked.Event += Select;
+        View.OnSkillClicked.Event += _selectedSkillId.Invoke;
+
+        _playerScore.OnScoreChanged.Event += OnScoreChanged;
+        _playerSkills.OnSkillForgotten.Event += OnSkillForgotten;
+        _playerSkills.OnSkillObtained.Event += OnSkillObtained;
+
+        _selectedSkillId.Value = null;
     }
 
     protected override void Dispose(bool disposing)
     {
-        _playerSkills.OnModelChanged -= OnSkillsChanged;
-        _playerScore.OnModelChanged -= OnScoreChanged;
-
         View.OnForgetAllClicked.Event -= ForgetAll;
         View.OnForgetClicked.Event -= Forget;
         View.OnObtainClicked.Event -= Obtain;
-        View.OnSkillClicked.Event -= Select;
+        View.OnSkillClicked.Event -= _selectedSkillId.Invoke;
 
         base.Dispose(disposing);
     }
 
     private void ForgetAll()
     {
+        foreach (var skill in _playerSkills)
+            _playerScore.Score += skill.price;
         _playerSkills.Clear();
     }
 
-    private void Select(PlayerSkill skill)
+    private void OnScoreChanged(int _)
     {
-        _selectedSkill = skill;
-        UpdateViewInfo();
+        if (SelectedSkill == null)
+            return;
+        if (IsNotObtained(SelectedSkill) && EnoughScore())
+            _canObtain.Value = EnoughScore() && ReachableObtain();
     }
+
+    private void OnSkillObtained(PlayerSkill skill)
+    {
+        if (SelectedSkill == null || !Graph.Contains(skill))
+            return;
+        if(SelectedSkill == skill)
+        {
+            _canObtain.Value = false;
+            _canForget.Value = ReachableToForget();
+            return;
+        }
+        UpdateReachability();
+    }
+
+    private void OnSkillForgotten(PlayerSkill skill)
+    {
+        if (SelectedSkill == null || !Graph.Contains(skill))
+            return;
+        if(SelectedSkill == skill)
+        {
+            _canObtain.Value = EnoughScore() && ReachableObtain();
+            _canForget.Value = false;
+            return;
+        }
+        UpdateReachability();
+    }
+
+    private void ResolveSelection(int? id)
+    {
+        if (id != null && !_skillGraph.SkillGraph.Contains(id.Value))
+        {
+            _selectedSkillId.Value = null;
+            return;
+        }
+        if (id == null)
+        {
+            _canForget.Value = false;
+            _canObtain.Value = false;
+            _price.Value = null;
+            return;
+        }
+        _price.Value = SelectedSkill.price;
+        UpdateReachability();
+        
+    }
+
+    private void UpdateReachability()
+    {
+        if (IsNotObtained(SelectedSkill))
+        {
+            _canForget.Value = false;
+            _canObtain.Value = EnoughScore() && ReachableObtain();
+            return;
+        }
+        else
+        {
+            _canObtain.Value = false;
+            _canForget.Value = ReachableToForget();
+        }
+    }
+
+    private bool ReachableToForget()
+    {
+        foreach (var item in Graph[SelectedSkill.Key])
+            if (_playerSkills.IsObtained(Graph[item].value) && !Graph.IsRootReachable(item, SelectedSkill))
+                return false;
+        return true;
+    }
+    private bool ReachableObtain() => Graph.IsReachableFromRoot(SelectedSkill, IsNotObtained);
+    private bool EnoughScore()=> _playerScore.Score >= SelectedSkill.price;
 
     private void Forget()
     {
-        Debug.Assert(CanForget());
-
-        _playerScore.Score += _selectedSkill.price;
-        _playerSkills.Forget(_selectedSkill);
+        if (!_canForget.Value)
+            return;
+        _playerScore.Score += SelectedSkill.price;
+        _playerSkills.Forget(SelectedSkill);
     }
 
     private void Obtain()
     {
-        Debug.Assert(CanObtain());
-
-        _playerScore.Score -= _selectedSkill.price;
-        _playerSkills.Obtain(_selectedSkill);
-    }
-
-    private void OnScoreChanged(IPlayerScoreModel score)
-    {
-        UpdateViewInfo();
-    }
-
-    private void OnSkillsChanged(IPlayerSkillsModel skills)
-    {
-        UpdateViewInfo();
-    }
-
-    private void UpdateViewInfo()
-    {
-        if (_selectedSkill != null)
-        {
-            View.CanForgetSelected = false;
-            View.CanObtainSelected = false;
+        if (!_canObtain.Value)
             return;
-        }
-        PlayerSkill selectedSkill = _selectedSkill;
-        if (_playerSkills.IsObtained(selectedSkill))
-        {
-            bool canForget = true;
-            foreach (var item in Graph.GetConnections(_selectedSkill))
-                if (_playerSkills.IsObtained(Graph[item].value) && !Graph.IsRootReachable(item, selectedSkill))
-                    canForget = false;
-
-            View.CanForgetSelected = canForget;
-            View.CanObtainSelected = false;
-        }
-        else
-        {
-            View.CanObtainSelected = _playerScore.Score >= selectedSkill.price && Graph.IsReachableFromRoot(selectedSkill, _playerSkills.IsObtained);
-            View.CanForgetSelected = false;
-        }
+        _playerScore.Score -= SelectedSkill.price;
+        _playerSkills.Obtain(SelectedSkill);
     }
 
-    private bool CanObtain()
+    private bool IsNotObtained(PlayerSkill skill)
     {
-        return _selectedSkill != null && !_playerSkills.IsObtained(_selectedSkill) && Graph.IsReachableFromRoot(_selectedSkill, _playerSkills.IsObtained);
-    }
-
-    private bool CanForget()
-    {
-        if (_selectedSkill != null)
-            return false;
-        if (_playerSkills.IsObtained(_selectedSkill))
-            return false;
-
-        foreach (var item in Graph.GetConnections(_selectedSkill))
-            if (_playerSkills.IsObtained(Graph[item].value) && !Graph.IsRootReachable(item, _selectedSkill))
-                return false;
-
-        return true;
+        return !_playerSkills.IsObtained(skill);
     }
 }

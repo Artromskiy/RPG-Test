@@ -10,10 +10,12 @@ using System.IO;
 public abstract class Model<T> : IModel<T> where T : class, IModel<T>
 {
     private static readonly JsonSerializer _jsonSerializer = JsonSerializer.CreateDefault();
-    public event Action<T> OnModelChanged;
+    private readonly GameEvent<T> _onModelChanged = new();
+    IGameEvent<T> IModel<T>.OnModelChanged => _onModelChanged;
     private string _modelKey;
 
     string IModel.ModelKey { set => _modelKey = value; }
+    void IModel.Save() => Save();
 
     /// <summary>
     /// Saves object data into file with specified ModelKey
@@ -26,6 +28,7 @@ public abstract class Model<T> : IModel<T> where T : class, IModel<T>
         //writer.Flush(); // Flush called automatically on stream close
     }
 
+
     /// <summary>
     /// Saves object data and notifies subscribers about it
     /// </summary>
@@ -33,6 +36,6 @@ public abstract class Model<T> : IModel<T> where T : class, IModel<T>
     {
         Save();
         Debug.Assert(this is T);
-        OnModelChanged.Invoke(this as T);
+        _onModelChanged.Invoke(this as T);
     }
 }

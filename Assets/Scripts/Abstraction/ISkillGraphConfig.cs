@@ -1,4 +1,4 @@
 public interface ISkillGraphConfig:IConfig
 {
-    Graph<int, PlayerSkill> PlayerSkillGraph { get; }
+    Graph<int, PlayerSkill> SkillGraph { get; }
 }

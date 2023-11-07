@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6305919958079300096}
   - component: {fileID: 8081457582451530071}
   - component: {fileID: 6901649067964017899}
+  - component: {fileID: 9001570510273229680}
   - component: {fileID: 587183220424259328}
   m_Layer: 5
   m_Name: SkillConnection
@@ -37,7 +38,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8081457582451530071
 CanvasRenderer:
@@ -61,7 +62,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0.20389818, g: 0.5471698, b: 0.2908663, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -71,7 +72,8 @@ MonoBehaviour:
   m_improveResolution: 0
   m_Resolution: 0
   m_useNativeSize: 0
-  m_points: []
+  m_points:
+  - {x: 0, y: 0}
   lineThickness: 15
   relativeSize: 0
   lineList: 0
@@ -80,6 +82,19 @@ MonoBehaviour:
   LineJoins: 0
   BezierMode: 0
   drivenExternally: 0
+--- !u!114 &9001570510273229680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2882674752372805598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b52ee3a4491f3742bb35fa3eec798d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  transforms: []
 --- !u!114 &587183220424259328
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93,3 +108,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _lineComponent: {fileID: 6901649067964017899}
+  _lineConnector: {fileID: 9001570510273229680}

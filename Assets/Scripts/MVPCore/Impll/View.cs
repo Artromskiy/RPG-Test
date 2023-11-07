@@ -1,12 +1,22 @@
-using UnityEngine;
+using Reflex.Attributes;
 using System;
+using UnityEngine;
 
 /// <summary>
 /// Base View class providing dispose callbacks
 /// </summary>
-public abstract class View : MonoBehaviour, IView
+public abstract class View<TPresenter> : MonoBehaviour, IView
 {
     private bool _disposed;
+    protected TPresenter Presenter { get; private set; }
+    [Inject]
+    public void Init(TPresenter presenter)
+    {
+        Presenter = presenter;
+        Init();
+    }
+    protected abstract void Init();
+
     ~View()
     {
         if (!_disposed)

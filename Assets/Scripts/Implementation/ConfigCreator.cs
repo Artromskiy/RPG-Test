@@ -7,23 +7,20 @@ public static class ConfigCreator<T> where T : class, IConfig
     public static T Create(string key)
     {
         bool created = false;
-        bool serializationError = false;
         T config = null;
         var textAsset = Resources.Load<TextAsset>(key);
         if (textAsset != null)
         {
-            try
+            //try
             {
                 config = JsonConvert.DeserializeObject<T>(textAsset.text);
                 created = true;
             }
-            catch
-            {
-                serializationError = true;
-            }
+            //catch (Exception e)
+            //{
+            //    throw new JsonSerializationException($"Config with value {key} not loaded", e);
+            //}
         }
-        if (serializationError)
-            throw new JsonSerializationException($"Config with value {key} not loaded");
         if (!created)
             throw new FileNotFoundException("Config not found", key);
         return config;
